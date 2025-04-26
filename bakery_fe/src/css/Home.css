@@ -1,0 +1,43 @@
+.banner {
+    height: 90vh;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .banner .carousel-inner {
+    height: 100%;
+  }
+  
+  .banner .carousel-item img {
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s ease-in-out;
+  }
+  
+  .banner-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 2;
+  }
+  
+  .banner-overlay h1,
+  .banner-overlay p {
+    color: #ff69b4;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+  }
+  
+  .banner-overlay .btn {
+    font-weight: bold;
+    border-radius: 10px;
+    padding: 12px 30px;
+  }
+  
+  /* Optional: chỉnh indicator */
+  .carousel-indicators [data-bs-target] {
+    background-color: #ff69b4;
+  }
+  

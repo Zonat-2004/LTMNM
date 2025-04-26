@@ -1,0 +1,130 @@
+/* Footer.css */
+
+/* Footer Services Section */
+.footer-services {
+    background-color: #f7b0b7; /* màu hồng */
+    color: #ffffff; /* tất cả chữ trắng */
+    padding: 5px 0;
+    text-align: center;
+  }
+  
+  .footer-services h3 {
+    font-size: 40px;
+    margin-bottom: 50px;
+    font-weight: bold;
+    color: #ffffff; /* chữ trắng */
+  }
+  
+  .services-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    justify-items: center;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  
+  .service-item {
+    text-align: center;
+  }
+  
+  .service-item i {
+    font-size: 40px;
+    margin-bottom: 15px;
+    color: #ffffff; /* icon trắng */
+  }
+  
+  .service-item h5 {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #ffffff; /* chữ trắng */
+  }
+  
+  .service-item p {
+    font-size: 16px;
+    color: #ffffff; /* chữ trắng */
+  }
+  
+  /* Footer Company Info Section */
+  .footer-company {
+    background-color: #212121; /* màu đen */
+    color: #ffffff; /* tất cả chữ trắng */
+    padding: 60px 0 30px 0;
+    text-align: center;
+  }
+  
+  .company-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 30px;
+    justify-content: center;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  
+  .brand-name {
+    font-size: 26px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #ffffff; /* chữ trắng */
+  }
+  
+  .social-icons a {
+    display: inline-block;
+    margin: 0 8px;
+    color: #ffffff; /* icon trắng */
+    font-size: 20px;
+    transition: color 0.3s;
+  }
+  
+  .social-icons a:hover {
+    color: #f7b0b7; /* hover nhẹ hồng */
+  }
+  
+  .footer-company h5 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #ffffff; /* chữ trắng */
+  }
+  
+  .footer-company ul {
+    padding: 0;
+    list-style: none;
+  }
+  
+  .footer-company ul li {
+    margin-bottom: 10px;
+  }
+  
+  .footer-company ul li a {
+    color: #ffffff; /* link trắng */
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  
+  .footer-company ul li a:hover {
+    color: #f7b0b7; /* hover nhẹ hồng */
+  }
+  
+  .footer-company p {
+    margin-bottom: 10px;
+    font-size: 15px;
+    color: #ffffff; /* chữ trắng */
+  }
+  
+  .footer-company a {
+    color: #ffffff; /* link trắng */
+  }
+  
+  hr {
+    border-top: 1px solid #444;
+    margin: 30px 0;
+  }
+  
+  .text-center p {
+    font-size: 14px;
+    color: #ffffff; /* chữ trắng */
+  }
+  

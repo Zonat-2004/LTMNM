@@ -1,0 +1,65 @@
+/* Header.css */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #ff6699; /* màu hồng */
+    padding: 10px 40px;
+  }
+  
+  .logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff; /* chữ trắng */
+  }
+  
+  .search-bar {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 30px;
+    overflow: hidden;
+  }
+  
+  .search-bar input {
+    border: none;
+    padding: 8px 20px;
+    outline: none;
+    width: 250px;
+  }
+  
+  .search-bar button {
+    background-color: #ff6699;
+    border: none;
+    padding: 8px 15px;
+    cursor: pointer;
+    color: #fff;
+    font-size: 16px;
+  }
+  
+  .search-bar button i {
+    pointer-events: none;
+  }
+  
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .nav-links a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 16px;
+    position: relative;
+  }
+  
+  .nav-links a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Nếu bạn muốn dropdown đẹp hơn nữa thì thêm ở đây */
+  .dropdown {
+    position: relative;
+  }
+  

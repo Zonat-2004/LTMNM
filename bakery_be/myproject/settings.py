@@ -130,3 +130,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # URL của frontend React
 ]
+MEDIA_URL = '/media/'  # Đường dẫn mà frontend sẽ sử dụng để truy cập ảnh
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Thư mục lưu trữ ảnh trên máy chủ

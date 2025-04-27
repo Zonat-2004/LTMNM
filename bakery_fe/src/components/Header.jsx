@@ -1,5 +1,5 @@
-// Header.jsx
 import React from 'react';
+import { Link } from 'react-router-dom'; // Import Link từ react-router-dom
 import '../css/Header.css'; // nhớ import file CSS riêng
 
 function Header() {
@@ -13,14 +13,13 @@ function Header() {
       </div>
 
       <nav className="nav-links">
-        <a href="#">Trang chủ</a>
+        <Link to="/">Trang chủ</Link> {/* Liên kết đến trang chủ */}
         <div className="dropdown">
-          <a href="#">Sản phẩm <i className="fas fa-caret-down"></i></a>
-          {/* Dropdown menu (nếu bạn muốn sau này) */}
+          <Link to="/cakes">Sản phẩm <i className="fas fa-caret-down"></i></Link> {/* Liên kết đến trang sản phẩm bánh */}
         </div>
-        <a href="#">Giỏ hàng</a>
-        <a href="#">Đăng nhập</a>
-        <a href="#">Đăng ký</a>
+        <Link to="/cart">Giỏ hàng</Link> {/* Giỏ hàng */}
+        <Link to="/login">Đăng nhập</Link> {/* Đăng nhập */}
+        <Link to="/signup">Đăng ký</Link> {/* Đăng ký */}
       </nav>
     </header>
   );

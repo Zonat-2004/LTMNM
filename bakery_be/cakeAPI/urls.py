@@ -1,6 +1,7 @@
 from django.urls import include, path
 from .views import CakeListView, CakeDetailView,CategoryListView, CategoryDetailView, OrderDetailView, OrderListView, PaymentDetailView, PaymentListView, UserDetailView, UserListView, home # Import view
-
+from django.conf import settings
+from django.conf.urls.static import static
 urlpatterns = [
     path('api/', include([
         path('cakes/', CakeListView.as_view(), name='cake-list'),
@@ -15,4 +16,4 @@ urlpatterns = [
         path('orders/<str:pk>/', OrderDetailView.as_view(), name='order-detail'),
     ])),
     path('', home, name='home'),
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

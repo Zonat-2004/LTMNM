@@ -1,16 +1,25 @@
+// src/App.jsx
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import React from "react";
-import '@fortawesome/fontawesome-free/css/all.min.css';
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Home from './pages/Home'; 
 import MainLayout from "./layout/MainLayout";
-import AdminApp from './admin';
-
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import Home from './pages/Home';
+import Admin from './pages/Admin';
+import AdminLayout from "./layout/AdminLayout";
+import CakeListAdmin from './pages/Products';
+import CakeList from './pages/CakeList';
+import AddCake from './pages/AddCake';
 function App() {
   return (
     <Router>
       <Routes>
+        {/* Route trang người dùng */}
         <Route path="/" element={<MainLayout><Home /></MainLayout>} />
-        <Route path="/admin" element={<AdminApp />} />
+        <Route path="/cakes" element={<MainLayout><CakeList /></MainLayout>} />
+
+        <Route path="/admin" element={<AdminLayout><Admin /></AdminLayout>} />
+        <Route path="/admin/products" element={<AdminLayout><CakeListAdmin /></AdminLayout>} />
+        <Route path="/admin/add-cake" element={<AdminLayout><AddCake /></AdminLayout>} />
       </Routes>
     </Router>
   );

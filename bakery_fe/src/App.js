@@ -3,12 +3,14 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from './pages/Home'; 
 import MainLayout from "./layout/MainLayout";
+import AdminApp from './admin';
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<MainLayout><Home /></MainLayout>} />
+        <Route path="/admin" element={<AdminApp />} />
       </Routes>
     </Router>
   );

@@ -17,7 +17,7 @@ class CakeSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=100)
     description = serializers.CharField()
     price = serializers.IntegerField()
-    image = serializers.CharField(max_length=255)
+    image = serializers.CharField(required=False, allow_blank=True)
     category_id = ObjectIdField()
     category_name = serializers.CharField(max_length=100, required=False)
 class CategorySerializer(serializers.Serializer):

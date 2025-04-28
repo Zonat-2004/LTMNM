@@ -25,7 +25,7 @@ const CakeList = () => {
           cakes.map((cake) => (
             <div key={cake._id} className="col-md-4 mb-4">
               <div className="card">
-                <img src={`http://localhost:8000${cake.image}`} alt={cake.name} className="card-img-top" />
+                <img src={`http://localhost:8000/media/${cake.image}`} alt={cake.name} className="card-img-top" />
                 <div className="card-body">
                   <h5 className="card-title">{cake.name}</h5>
                   <p className="card-text">{cake.description}</p>

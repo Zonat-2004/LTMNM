@@ -19,7 +19,7 @@ function Header() {
         </div>
         <Link to="/cart">Giỏ hàng</Link> {/* Giỏ hàng */}
         <Link to="/login">Đăng nhập</Link> {/* Đăng nhập */}
-        <Link to="/signup">Đăng ký</Link> {/* Đăng ký */}
+        <Link to="/register">Đăng ký</Link> {/* Đăng ký */}
       </nav>
     </header>
   );

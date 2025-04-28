@@ -29,6 +29,11 @@ class CakeListView(APIView):
         for cake in cakes:
             cake["_id"] = str(cake["_id"])  # Chuyển ObjectId thành string
             cake["category_id"] = str(cake["category_id"])
+            category = db.categories.find_one({"_id": ObjectId(cake["category_id"])})
+            if category:
+                cake["category_name"] = category["name"]
+            else:
+                cake["category_name"] = None  # Nếu không tìm thấy danh mục
         serializer = CakeSerializer(cakes, many=True)
         return Response(serializer.data)
 
@@ -56,6 +61,11 @@ class CakeDetailView(APIView):
         if cake:
             cake["_id"] = str(cake["_id"])
             cake["category_id"] = str(cake["category_id"])
+            category = db.categories.find_one({"_id": ObjectId(cake["category_id"])})
+            if category:
+                cake["category_name"] = category["name"]
+            else:
+                cake["category_name"] = None  # Nếu không tìm thấy danh mục
             serializer = CakeSerializer(cake)
             return Response(serializer.data)
         return Response({"error": "Không tìm thấy bánh kem!"}, status=status.HTTP_404_NOT_FOUND)

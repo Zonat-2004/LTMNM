@@ -18,24 +18,22 @@ const CakeListAdmin = () => {
 
   // Xóa sản phẩm bánh
   const handleDelete = (id) => {
-    axios.delete(`http://localhost:8000/api/cakes/${id}/`)
-      .then(() => {
-        setCakes(cakes.filter(cake => cake.id !== id)); // Cập nhật lại danh sách sau khi xóa
-      })
-      .catch(error => {
-        console.error('Lỗi khi xóa bánh:', error);
-      });
+    // Xác nhận trước khi xóa
+    if (window.confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) {
+      axios.delete(`http://localhost:8000/api/cakes/${id}/`)
+        .then(() => {
+          setCakes(cakes.filter(cake => cake._id !== id)); // Cập nhật danh sách bánh sau khi xóa
+        })
+        .catch(error => {
+          console.error('Lỗi khi xóa bánh:', error);
+        });
+    }
   };
 
-  // Cập nhật thông tin sản phẩm bánh
-  const handleEdit = (id, updatedCake) => {
-    axios.put(`http://localhost:8000/api/cakes/${id}/`, updatedCake)
-      .then(response => {
-        setCakes(cakes.map(cake => (cake.id === id ? response.data : cake)));
-      })
-      .catch(error => {
-        console.error('Lỗi khi sửa bánh:', error);
-      });
+  // Thực hiện điều hướng tới trang chỉnh sửa bánh
+  const handleEdit = (id) => {
+    // Điều hướng đến trang chỉnh sửa bánh, truyền theo ID bánh
+    window.location.href = `/admin/edit-cake/${id}`;
   };
 
   return (
@@ -68,15 +66,31 @@ const CakeListAdmin = () => {
             </thead>
             <tbody>
               {cakes.map((cake) => (
-                <tr key={cake.id}>
+                <tr key={cake._id}>
                   <td>{cake.name}</td>
                   <td>{cake.description}</td>
-                  <td>{cake.price}</td>
-                  <td><img src={`http://localhost:8000${cake.image}`} alt={cake.name} style={{ width: '100px' }} /></td>
-                  <td>{cake.category_id}</td>
+                  <td>{cake.price} VND</td>
                   <td>
-                    <button className="btn btn-warning me-2" onClick={() => handleEdit(cake.id, { ...cake, price: cake.price + 1000 })}>Sửa</button>
-                    <button className="btn btn-danger" onClick={() => handleDelete(cake.id)}>Xóa</button>
+                    <img 
+                      src={`http://localhost:8000/media/${cake.image}`} 
+                      alt={cake.name} 
+                      style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '8px' }} 
+                    />
+                  </td>
+                  <td>{cake.category_name}</td> {/* Hiển thị tên danh mục */}
+                  <td>
+                    <button 
+                      className="btn btn-warning me-2" 
+                      onClick={() => handleEdit(cake._id)} // Chuyển hướng đến trang chỉnh sửa
+                    >
+                      Sửa
+                    </button>
+                    <button 
+                      className="btn btn-danger" 
+                      onClick={() => handleDelete(cake._id)}
+                    >
+                      Xóa
+                    </button>
                   </td>
                 </tr>
               ))}

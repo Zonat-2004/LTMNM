@@ -13,6 +13,15 @@ import LoginPage from './pages/Login';
 import Register from './pages/Register';
 import EditCake from './pages/EditCake';
 function App() {
+  console.log("MainLayout =", MainLayout);
+  console.log("AdminLayout =", AdminLayout);
+  console.log("AddCake =", AddCake);
+  console.log("Home =", Home);
+  console.log("Admin =", Admin);
+  console.log("CakeList =", CakeList);
+  console.log("LoginPage =", LoginPage);
+  console.log("Register =", Register);
+  console.log("EditCake =", EditCake);
   return (
     <Router>
       <Routes>

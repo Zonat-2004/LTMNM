@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import (  # đã import sẵn trong __init__.py
-    CakeListView, CakeDetailView, CakeCreateView,
+    CakeListView, CakeDetailView, 
     CategoryListView, CategoryDetailView,
     UserListView, UserDetailView,
     home
@@ -12,7 +12,7 @@ urlpatterns = [
     # API paths
     path('api/cakes/', CakeListView.as_view(), name='cake-list'),
     path('api/cakes/<str:pk>/', CakeDetailView.as_view(), name='cake-detail'),
-    path('api/cakes/add/', CakeCreateView.as_view(), name='cake-add'),
+    # path('api/cakes/add/', CakeCreateView.as_view(), name='cake-add'),
     path('api/categories/', CategoryListView.as_view(), name='category-list'),
     path('api/categories/<str:pk>/', CategoryDetailView.as_view(), name='category-detail'),
     path('api/users/', UserListView.as_view(), name='user-list'),

@@ -1,5 +1,13 @@
 from rest_framework import serializers
 from bson import ObjectId
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from django.conf import settings
+import os
+
+from pymongo import MongoClient
+client = MongoClient('mongodb://localhost:27017/')
+db = client['QuanLyWebBanBanh']
 
 class ObjectIdField(serializers.Field):
     def to_representation(self, value):
@@ -10,16 +18,38 @@ class ObjectIdField(serializers.Field):
             return ObjectId(data)
         except:
             raise serializers.ValidationError("Invalid ObjectId")
-            raise
 
 class CakeSerializer(serializers.Serializer):
     _id = ObjectIdField(read_only=True)
     name = serializers.CharField(max_length=100)
     description = serializers.CharField()
     price = serializers.IntegerField()
-    image = serializers.CharField(required=False, allow_blank=True)
-    category_id = ObjectIdField()
-    category_name = serializers.CharField(max_length=100, required=False)
+    image = serializers.ImageField(required=False, allow_null=True)
+    category = ObjectIdField()
+    category_name = serializers.CharField(max_length=100, required=False, read_only=True)
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        image_path = instance.get("image")
+        if image_path:
+            rep["image"] = settings.MEDIA_URL + image_path
+        else:
+            rep["image"] = None
+        return rep
+
+    def create(self, validated_data):
+        image = validated_data.pop('image', None)
+        if image:
+            saved_path = default_storage.save(f'cakes/{image.name}', ContentFile(image.read()))
+            validated_data['image'] = saved_path
+        category = validated_data.get('category')
+        if category is None:
+            raise serializers.ValidationError({"category": "This field is required."})
+        validated_data['category_id'] = category
+        result = db.cakes.insert_one(validated_data)
+        validated_data['_id'] = str(result.inserted_id)
+        validated_data['category_id'] = str(validated_data['category_id'])
+        return validated_data
 class CategorySerializer(serializers.Serializer):
     _id = serializers.CharField(read_only=True)
     name = serializers.CharField(max_length=100)

@@ -4,27 +4,22 @@ import { useNavigate } from 'react-router-dom';
 
 const AddCake = () => {
   const navigate = useNavigate();
-
-  // state cho form
   const [cake, setCake] = useState({
     name: '',
     description: '',
     price: '',
-    category_id: '',
+    category: '',
   });
   const [imageFile, setImageFile] = useState(null);
   const [preview, setPreview] = useState(null);
-
-  // state phụ
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState('');
 
-  // fetch categories
   useEffect(() => {
     axios
       .get('http://localhost:8000/api/categories/')
       .then(res => {
-        console.log('Danh mục:', res.data); // Debug danh mục
+        console.log('Danh mục:', res.data);
         setCategories(res.data);
       })
       .catch(() => setError('Không tải được danh mục'));
@@ -38,12 +33,12 @@ const AddCake = () => {
   const handleFileChange = e => {
     const file = e.target.files[0];
     setImageFile(file);
-    setPreview(URL.createObjectURL(file));
+    setPreview(file ? URL.createObjectURL(file) : null);
   };
 
   const handleSubmit = async e => {
     e.preventDefault();
-    if (!cake.name || !cake.description || !cake.price || !cake.category_id) {
+    if (!cake.name || !cake.description || !cake.price || !cake.category) {
       setError('Vui lòng điền đầy đủ thông tin');
       return;
     }
@@ -52,13 +47,11 @@ const AddCake = () => {
     formData.append('name', cake.name);
     formData.append('description', cake.description);
     formData.append('price', parseInt(cake.price, 10));
-    formData.append('category_id', cake.category_id);
+    formData.append('category', cake.category); // Đổi thành 'category'
     if (imageFile) {
-      console.log('imageFile:', imageFile);
       formData.append('image', imageFile);
     }
 
-    // Debug dữ liệu gửi đi
     for (let [key, value] of formData.entries()) {
       console.log(key, value);
     }
@@ -67,10 +60,19 @@ const AddCake = () => {
       const response = await axios.post('http://localhost:8000/api/cakes/', formData);
       console.log('Bánh đã được thêm:', response.data);
       navigate('/admin/products');
-    } catch (err) {
-      const errorMessage = err.response?.data?.message || err.message || 'Lỗi không xác định. Vui lòng kiểm tra lại.';
+    } catch (error) {
+      let errorMessage = 'Lỗi không xác định. Vui lòng kiểm tra lại.';
+      if (error.response) {
+        errorMessage = error.response.data?.message || JSON.stringify(error.response.data);
+        console.log('Lỗi chi tiết:', error.response.data);
+      } else if (error.request) {
+        errorMessage = 'Không nhận được phản hồi từ server. Kiểm tra kết nối hoặc server.';
+        console.log('Lỗi yêu cầu:', error.request);
+      } else {
+        errorMessage = error.message;
+        console.log('Lỗi:', error.message);
+      }
       setError(errorMessage);
-      console.error('Lỗi chi tiết:', err.response || err);
     }
   };
 
@@ -89,7 +91,6 @@ const AddCake = () => {
 
         <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-6">
           <div className="flex flex-col space-y-6">
-            {/* Tên bánh */}
             <div className="flex flex-col">
               <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center">
                 <span className="mr-2">📛</span> Tên bánh
@@ -105,7 +106,6 @@ const AddCake = () => {
               />
             </div>
 
-            {/* Mô tả */}
             <div className="flex flex-col">
               <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center">
                 <span className="mr-2">📝</span> Mô tả
@@ -121,7 +121,6 @@ const AddCake = () => {
               />
             </div>
 
-            {/* Giá */}
             <div className="flex flex-col">
               <label className="text-sm font-bold text-pink-700 flex items-center mb-2">
                 <span className="mr-2">💰</span> Giá (VNĐ)
@@ -137,7 +136,6 @@ const AddCake = () => {
               />
             </div>
 
-            {/* Hình ảnh */}
             <div className="flex flex-col">
               <label className="text-sm font-bold text-pink-700 flex items-center mb-2">
                 <span className="mr-2">🖼️</span> Hình ảnh
@@ -160,15 +158,14 @@ const AddCake = () => {
               />
             </div>
 
-            {/* Danh mục */}
             <div className="flex flex-col">
               <label className="text-sm font-bold text-pink-700 flex items-center mb-2">
                 <span className="mr-2">📂</span> Danh mục
               </label>
               <select
-                name="category_id"
+                name="category"
                 className="w-full p-3 rounded-lg border-2 border-pink-200 bg-pink-50 text-gray-700 focus:outline-none focus:border-pink-400 focus:bg-white transition-all duration-300"
-                value={cake.category_id}
+                value={cake.category}
                 onChange={handleChange}
                 required
               >
@@ -182,7 +179,6 @@ const AddCake = () => {
             </div>
           </div>
 
-          {/* Nút bấm */}
           <div className="text-center mt-8">
             <button
               type="submit"

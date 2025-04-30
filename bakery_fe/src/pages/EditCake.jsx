@@ -12,7 +12,7 @@ const EditCake = () => {
     description: '',
     price: '',
     image: '',
-    category_id: ''
+    category: ''
   });
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
@@ -24,8 +24,10 @@ const EditCake = () => {
 
   // Lấy dữ liệu bánh + danh mục
   useEffect(() => {
+    console.log("Đang tải dữ liệu bánh với id:", id); // Log id
     axios.get(`http://localhost:8000/api/cakes/${id}/`)
       .then(r => {
+        console.log(r.data); // Kiểm tra dữ liệu trả về
         setCake(r.data);
         setLoading(false);
       })
@@ -33,11 +35,12 @@ const EditCake = () => {
         setError('Không thể tải dữ liệu bánh.');
         setLoading(false);
       });
-
+  
     axios.get('http://localhost:8000/api/categories/')
       .then(r => setCategories(r.data))
       .catch(() => setError('Không thể tải danh mục.'));
   }, [id]);
+  
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -57,7 +60,7 @@ const EditCake = () => {
     formData.append('name', cake.name);
     formData.append('description', cake.description);
     formData.append('price', cake.price);
-    formData.append('category_id', cake.category_id);
+    formData.append('category', cake.category);
 
     // *** Ghi chú quan trọng: phải append luôn field image ***
     if (selectedImage) {
@@ -131,7 +134,7 @@ const EditCake = () => {
                 {cake.image && (
                   <div className="my-2">
                     <img
-                      src={previewImage || `http://localhost:8000/media/${cake.image}`}
+                      src={previewImage || `http://localhost:8000/${cake.image}`}
                       alt={cake.name}
                       style={{ width: 120, height: 120, objectFit: 'cover' }}
                     />
@@ -152,7 +155,7 @@ const EditCake = () => {
                 <select
                   name="category_id"
                   className="form-control"
-                  value={cake.category_id}
+                  value={cake.category}
                   onChange={handleChange}
                   required
                 >

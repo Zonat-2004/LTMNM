@@ -12,6 +12,7 @@ import AddCake from './pages/AddCake';
 import LoginPage from './pages/Login';
 import Register from './pages/Register';
 import EditCake from './pages/EditCake';
+import Category from './pages/Category';
 function App() {
   console.log("MainLayout =", MainLayout);
   console.log("AdminLayout =", AdminLayout);
@@ -35,6 +36,7 @@ function App() {
         <Route path="/admin/products" element={<AdminLayout><CakeListAdmin /></AdminLayout>} />
         <Route path="/admin/add-cake" element={<AdminLayout><AddCake /></AdminLayout>} />
         <Route path="/admin/edit-cake/:id" element={<AdminLayout><EditCake /></AdminLayout>} />
+        <Route path="/admin/categories" element={<AdminLayout><Category /></AdminLayout>} />
 
       </Routes>
     </Router>

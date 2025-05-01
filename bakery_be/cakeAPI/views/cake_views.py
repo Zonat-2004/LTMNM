@@ -9,16 +9,27 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 
 class CakeListView(APIView):
-    parser_classes = [MultiPartParser, FormParser]
-    
     def get(self, request):
-        cakes = list(db.cakes.find())
+        search_query = request.GET.get('search', '')  # Lấy từ khóa tìm kiếm từ query params
+
+        # Lấy danh sách bánh từ database, nếu có từ khóa tìm kiếm thì lọc theo tên bánh
+        if search_query:
+            cakes_query = db.cakes.find({
+                "name": {"$regex": search_query, "$options": "i"}  # Tìm kiếm không phân biệt chữ hoa, chữ thường
+            })
+        else:
+            cakes_query = db.cakes.find()  # Nếu không có tìm kiếm, lấy tất cả bánh
+
+        # Chuyển đổi các ObjectId thành string
+        cakes = list(cakes_query)
         for cake in cakes:
             cake['_id'] = str(cake['_id'])
             cake['category_id'] = str(cake['category_id'])
-            cake['category'] = cake['category_id']        # ← thêm dòng này
+            cake['category'] = cake['category_id']  # Thêm category vào kết quả trả về
             category = db.categories.find_one({'_id': ObjectId(cake['category_id'])})
             cake['category_name'] = category['name'] if category else None
+
+        # Serialize dữ liệu và trả về
         serializer = CakeSerializer(cakes, many=True)
         return Response(serializer.data)
     

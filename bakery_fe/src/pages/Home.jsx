@@ -39,7 +39,7 @@ const Home = () => {
         <div className="banner-overlay">
           <h1 className="display-4 fw-bold text-pink">BAKERY CAKE</h1>
           <p className="lead text-pink">Chào mừng tới trang web</p>
-          <a href="/api/" className="btn btn-light btn-lg mt-3">ĐẶT BÁNH NGAY</a>
+          <a href="/api/" className="btn btn-light btn-lg mt-3 shadow-custom">ĐẶT BÁNH NGAY</a>
         </div>
 
       </div>

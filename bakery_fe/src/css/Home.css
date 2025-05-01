@@ -1,43 +1,87 @@
+/* Banner Section */
 .banner {
-    height: 90vh;
-    width: 100%;
-    position: relative;
-    overflow: hidden;
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.carousel-item {
+  position: relative;
+  height: 100vh;
+}
+
+.carousel-inner {
+  height: 100%;
+}
+
+.carousel img {
+  object-fit: cover;
+  height: 100%;
+  width: 100%;
+  transition: opacity 3s ease-in-out; /* Thêm hiệu ứng chuyển đổi mượt mà */
+}
+
+.carousel-item-next,
+.carousel-item-prev,
+.carousel-item.active {
+  transition: transform 3s ease-in-out; /* Chuyển đổi vị trí mượt mà */
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  filter: invert(100%);
+}
+
+.banner-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 10;
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.banner-overlay h1 {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #d63384;
+}
+
+.banner-overlay p {
+  font-size: 1.2rem;
+  font-weight: 300;
+  color: #f8d7da;
+}
+
+.btn-custom {
+  background-color: #d63384;
+  color: white;
+  border-radius: 30px;
+  font-weight: bold;
+  padding: 12px 30px;
+  text-transform: uppercase;
+  transition: background 0.3s ease;
+}
+
+.btn-custom:hover {
+  background-color: #f06292;
+  transform: translateY(-3px);
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Smooth transition for the overlay */
+.banner-overlay:hover {
+  opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+  .banner-overlay h1 {
+    font-size: 2rem;
   }
-  
-  .banner .carousel-inner {
-    height: 100%;
-  }
-  
-  .banner .carousel-item img {
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.8s ease-in-out;
-  }
-  
-  .banner-overlay {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    z-index: 2;
-  }
-  
-  .banner-overlay h1,
+
   .banner-overlay p {
-    color: #ff69b4;
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+    font-size: 1rem;
   }
-  
-  .banner-overlay .btn {
-    font-weight: bold;
-    border-radius: 10px;
-    padding: 12px 30px;
-  }
-  
-  /* Optional: chỉnh indicator */
-  .carousel-indicators [data-bs-target] {
-    background-color: #ff69b4;
-  }
-  
+}

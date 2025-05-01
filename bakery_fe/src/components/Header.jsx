@@ -6,12 +6,6 @@ function Header() {
   return (
     <header className="header">
       <div className="logo">Bakery Shop</div>
-
-      <div className="search-bar">
-        <input type="text" placeholder="Tìm kiếm bánh..." />
-        <button><i className="fas fa-search"></i></button>
-      </div>
-
       <nav className="nav-links">
         <Link to="/">Trang chủ</Link> {/* Liên kết đến trang chủ */}
         <div className="dropdown">

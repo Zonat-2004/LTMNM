@@ -7,9 +7,22 @@ from ..database import db, get_object
 
 class CategoryListView(APIView):
     def get(self, request):
-        categories = list(db.categories.find())
+        search_query = request.GET.get('search', '')  # Lấy từ khóa tìm kiếm từ query params
+
+        # Lấy danh mục từ database, nếu có từ khóa tìm kiếm thì lọc theo tên
+        if search_query:
+            categories_query = db.categories.find({
+                "name": {"$regex": search_query, "$options": "i"}  # Tìm kiếm không phân biệt chữ hoa, chữ thường
+            })
+        else:
+            categories_query = db.categories.find()  # Nếu không có tìm kiếm, lấy tất cả danh mục
+
+        # Chuyển đổi các ObjectId thành string
+        categories = list(categories_query)
         for category in categories:
-            category['_id'] = str(category['_id'])
+            category['_id'] = str(category['_id'])  # Đảm bảo _id là chuỗi để trả về JSON hợp lệ
+
+        # Serialize dữ liệu và trả về
         serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data)
 

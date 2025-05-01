@@ -15,7 +15,7 @@ function Header() {
       <nav className="nav-links">
         <Link to="/">Trang chủ</Link> {/* Liên kết đến trang chủ */}
         <div className="dropdown">
-          <Link to="/cakes">Sản phẩm <i className="fas fa-caret-down"></i></Link> {/* Liên kết đến trang sản phẩm bánh */}
+          <Link to="/cakes">Sản phẩm </Link> {/* Liên kết đến trang sản phẩm bánh */}
         </div>
         <Link to="/cart">Giỏ hàng</Link> {/* Giỏ hàng */}
         <Link to="/login">Đăng nhập</Link> {/* Đăng nhập */}

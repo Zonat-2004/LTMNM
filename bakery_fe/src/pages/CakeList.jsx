@@ -3,20 +3,39 @@ import axios from 'axios';
 
 const CakeList = () => {
   const [cakes, setCakes] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [filteredCakes, setFilteredCakes] = useState([]);
 
+  // Lấy danh mục khi trang load
+  useEffect(() => {
+    axios.get('http://localhost:8000/api/categories/')
+      .then(res => setCategories(res.data))
+      .catch(err => console.error('Lỗi lấy danh mục:', err));
+  }, []);
+
+  // Lấy bánh mỗi khi trang load
   useEffect(() => {
     axios.get('http://localhost:8000/api/cakes/')
-      .then(response => {
-        setCakes(response.data);
+      .then(res => {
+        setCakes(res.data);
+        setFilteredCakes(res.data); // Mặc định hiển thị tất cả
       })
-      .catch(error => {
-        console.error('Lỗi khi tải danh sách bánh:', error);
-      });
+      .catch(err => console.error('Lỗi khi tải bánh:', err));
   }, []);
+
+  // Hàm lọc bánh theo danh mục
+  const handleFilter = () => {
+    if (!selectedCategory) {
+      setFilteredCakes(cakes); // Hiển thị tất cả nếu không có danh mục chọn
+    } else {
+      const filtered = cakes.filter(cake => cake.category === selectedCategory);
+      setFilteredCakes(filtered);
+    }
+  };
 
   return (
     <div className="container py-5">
-      {/* Nhúng CSS trực tiếp */}
       <style>{`
         .cake-card {
           background-color: #fff0f5;
@@ -86,13 +105,76 @@ const CakeList = () => {
         .btn-buy:hover {
           background: linear-gradient(135deg, #f06292, #ff85a2);
         }
+
+        .btn-filter {
+          margin-top: 10px;
+          background-color: #ff6f91; /* Màu tone hồng nhẹ */
+          color: white;
+          border: none;
+          padding: 8px 20px;
+          border-radius: 30px;
+          font-weight: bold;
+          transition: background 0.2s;
+        }
+
+        .btn-filter:hover {
+          background-color: #ff4f7d; /* Đổi màu khi hover */
+        }
+
+        /* Cải tiến phần dropdown và nút lọc */
+        .form-select {
+          padding: 10px 15px;
+          font-size: 1rem;
+          border-radius: 20px;
+          border: 2px solid #ff6f91; /* Màu hồng nhẹ */
+          outline: none;
+          transition: box-shadow 0.3s;
+        }
+
+        .form-select:focus {
+          box-shadow: 0 0 0 0.2rem rgba(255, 111, 145, 0.4);
+        }
+
+        .dropdown-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 15px;
+        }
+
+        .dropdown-container .btn-filter {
+          width: 150px;
+        }
+
+        /* Chỉnh sửa căn chỉnh cho dropdown và nút lọc để căn bằng nhau */
+        .mb-4.d-flex {
+          align-items: center;
+          justify-content: center;
+          gap: 15px;
+        }
       `}</style>
 
-      <h1 className="text-center mb-5 text-danger">🍰 Danh Sách Bánh 🍰</h1>
+      <h1 className="text-center mb-4 text-danger">🍰 Danh Sách Bánh 🍰</h1>
 
+      {/* Dropdown + nút lọc */}
+      <div className="mb-4 d-flex flex-column flex-md-row justify-content-center align-items-center gap-3">
+        <select
+          className="form-select w-75 w-md-50"
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+        >
+          <option value="">-- Tất cả danh mục --</option>
+          {categories.map(cat => (
+            <option key={cat._id} value={cat._id}>{cat.name}</option>
+          ))}
+        </select>
+        <button className="btn-filter" onClick={handleFilter}>Lọc</button>
+      </div>
+
+      {/* Danh sách bánh */}
       <div className="row">
-        {cakes.length > 0 ? (
-          cakes.map((cake) => (
+        {filteredCakes.length > 0 ? (
+          filteredCakes.map((cake) => (
             <div key={cake._id} className="col-md-4 mb-4 d-flex">
               <div className="cake-card w-100">
                 <div className="cake-image-wrapper">

@@ -12,6 +12,7 @@ import AddCake from './pages/AddCake';
 import LoginPage from './pages/Login';
 import Register from './pages/Register';
 import EditCake from './pages/EditCake';
+import 'bootstrap/dist/js/bootstrap.bundle.min';
 import Category from './pages/Category';
 function App() {
   console.log("MainLayout =", MainLayout);

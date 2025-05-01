@@ -1,87 +1,226 @@
 /* Banner Section */
 .banner {
+  height: 90vh;
+  width: 100%;
   position: relative;
-  height: 100vh;
   overflow: hidden;
 }
 
+/* Đảm bảo mọi phần tử carousel cùng chiều cao */
+.carousel,
+.carousel-inner,
 .carousel-item {
-  position: relative;
-  height: 100vh;
-}
-
-.carousel-inner {
   height: 100%;
 }
 
-.carousel img {
-  object-fit: cover;
-  height: 100%;
+/* Ảnh banner */
+.banner-img {
   width: 100%;
-  transition: opacity 3s ease-in-out; /* Thêm hiệu ứng chuyển đổi mượt mà */
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
-.carousel-item-next,
-.carousel-item-prev,
-.carousel-item.active {
-  transition: transform 3s ease-in-out; /* Chuyển đổi vị trí mượt mà */
-}
-
-.carousel-control-prev-icon,
-.carousel-control-next-icon {
-  filter: invert(100%);
-}
-
+/* Overlay văn bản */
 .banner-overlay {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
-  z-index: 10;
+  z-index: 2;
   color: #fff;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
 }
 
 .banner-overlay h1 {
+  color: #ff69b4;
   font-size: 3rem;
-  font-weight: bold;
-  color: #d63384;
 }
 
 .banner-overlay p {
-  font-size: 1.2rem;
-  font-weight: 300;
-  color: #f8d7da;
+  color: #ffd1dc;
+  font-size: 1.25rem;
 }
 
-.btn-custom {
-  background-color: #d63384;
-  color: white;
-  border-radius: 30px;
-  font-weight: bold;
+.banner-overlay .btn {
   padding: 12px 30px;
-  text-transform: uppercase;
-  transition: background 0.3s ease;
+  border-radius: 8px;
+  font-weight: bold;
+  background-color: #ff69b4;
+  border: none;
+  color: white;
+  transition: 0.3s ease-in-out;
 }
 
-.btn-custom:hover {
-  background-color: #f06292;
-  transform: translateY(-3px);
-  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.3);
+.banner-overlay .btn:hover {
+  background-color: #ff4081;
+  transform: translateY(-2px);
 }
 
-/* Smooth transition for the overlay */
-.banner-overlay:hover {
-  opacity: 0.9;
+/* Carousel indicators màu hồng */
+.carousel-indicators [data-bs-target] {
+  background-color: #ff69b4;
+}
+/* Phần sản phẩm nổi bật */
+/* Thẻ sản phẩm */
+.featured-product-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px 0;
 }
 
-@media (max-width: 768px) {
-  .banner-overlay h1 {
-    font-size: 2rem;
-  }
+.featured-cake-card {
+  background-color: #fff0f5;
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(255, 192, 203, 0.4);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 300px; /* Đặt chiều rộng cố định để thẻ đều nhau */
+  transition: transform 0.3s;
+}
 
-  .banner-overlay p {
-    font-size: 1rem;
-  }
+.featured-cake-card:hover {
+  transform: translateY(-5px);
+}
+
+.featured-cake-image-wrapper {
+  height: 250px;
+  overflow: hidden;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  flex-shrink: 0;
+}
+
+.featured-cake-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.featured-cake-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.featured-cake-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #d63384;
+}
+
+.featured-cake-description {
+  color: #555;
+  margin-top: 10px;
+  font-size: 0.95rem;
+  flex-grow: 1;
+}
+
+.featured-cake-price {
+  font-weight: bold;
+  color: #c2185b;
+  margin: 12px 0;
+}
+
+.featured-btn-buy {
+  background: linear-gradient(135deg, #ff85a2, #f06292);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 10px;
+  font-weight: bold;
+  transition: background 0.3s;
+  width: 100%;
+  margin-top: auto; /* Đẩy nút xuống dưới cùng */
+}
+
+.featured-btn-buy:hover {
+  background: linear-gradient(135deg, #f06292, #ff85a2);
+}
+/* Danh sách sản phẩm cuộn ngang */
+.featured-products {
+  position: relative;
+  margin-top: 30px;
+}
+.featured-product-list-horizontal {
+  display: flex;
+  gap: 20px;
+  scroll-snap-type: x mandatory; /* Snap cuộn để đẹp mắt */
+  overflow: hidden; /* Ẩn thanh cuộn ngang */
+}
+
+.featured-cake-card {
+  min-width: 280px;
+  flex: 0 0 auto;
+  background-color: #fff0f5;
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(255, 192, 203, 0.4);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s;
+  scroll-snap-align: center;
+}
+
+.featured-cake-card:hover {
+  transform: translateY(-5px);
+}
+/* Tiêu đề Sản phẩm nổi bật */
+/* Tiêu đề Sản phẩm nổi bật */
+.featured-products h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  color: #d63384;
+  text-transform: uppercase; /* In hoa chữ */
+  letter-spacing: 3px; /* Khoảng cách giữa các chữ */
+  position: relative;
+  margin-bottom: 20px; /* Giảm khoảng cách dưới tiêu đề */
+  text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2); /* Thêm bóng đổ */
+}
+
+/* Hiệu ứng hover cho tiêu đề */
+.featured-products h2:hover {
+  color: #f06292; /* Màu khi hover */
+  text-shadow: 2px 2px 15px rgba(255, 105, 180, 0.5); /* Tăng độ mờ của bóng */
+  transform: scale(1.05); /* Phóng to một chút khi hover */
+  transition: all 0.3s ease-in-out;
+}
+
+
+.scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #ff69b4; /* Màu hồng */
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  font-size: 1.8rem;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 1;
+  transition: background-color 0.3s, transform 0.3s;
+  box-shadow: 0 4px 10px rgba(255, 105, 180, 0.4);
+}
+
+.scroll-btn.left {
+  left: -30px; /* Nằm ngoài bên trái */
+}
+
+.scroll-btn.right {
+  right: -30px; /* Nằm ngoài bên phải */
+}
+
+.scroll-btn:hover {
+  background-color: #ff4081; /* Màu hồng sáng khi hover */
+  transform: scale(1.2); /* Tăng kích thước khi hover */
+}
+
+.scroll-btn:focus {
+  outline: none;
 }

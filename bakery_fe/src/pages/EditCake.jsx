@@ -35,12 +35,12 @@ const EditCake = () => {
         setError('Không thể tải dữ liệu bánh.');
         setLoading(false);
       });
-  
+
     axios.get('http://localhost:8000/api/categories/')
       .then(r => setCategories(r.data))
       .catch(() => setError('Không thể tải danh mục.'));
   }, [id]);
-  
+
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -54,32 +54,34 @@ const EditCake = () => {
     setPreviewImage(URL.createObjectURL(file));
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     const formData = new FormData();
     formData.append('name', cake.name);
     formData.append('description', cake.description);
     formData.append('price', cake.price);
     formData.append('category', cake.category);
 
-    // *** Ghi chú quan trọng: phải append luôn field image ***
+    // **Chỉ** append 'image' khi có ảnh mới
     if (selectedImage) {
       formData.append('image', selectedImage);
-    } else {
-      // nếu không đổi file, gửi luôn tên ảnh cũ để serializer đỡ lỗi
-      formData.append('image', cake.image);
     }
 
     try {
-      // Không set headers['Content-Type'] thủ công
-      await axios.put(`http://localhost:8000/api/cakes/${id}/`, formData);
-      alert('Cập nhật thành công');
+      // Dùng PATCH để partial update
+      await axios.patch(
+        `http://localhost:8000/api/cakes/${id}/`,
+        formData
+      );
+      alert('Cập nhật thành công!');
       navigate('/admin/products');
     } catch (err) {
-      console.error(err.response?.data || err);
+      console.error(err.response?.data);
       setError('Có lỗi xảy ra. Kiểm tra console để biết chi tiết.');
     }
   };
+
 
   return (
     <div className="container mt-5">
@@ -153,7 +155,7 @@ const EditCake = () => {
               <div className="form-group mt-3">
                 <label>Danh mục</label>
                 <select
-                  name="category_id"
+                  name="category"
                   className="form-control"
                   value={cake.category}
                   onChange={handleChange}
@@ -164,6 +166,7 @@ const EditCake = () => {
                     <option key={cat._id} value={cat._id}>{cat.name}</option>
                   ))}
                 </select>
+
               </div>
 
               {/* Submit */}

@@ -14,6 +14,7 @@ import Register from './pages/Register';
 import EditCake from './pages/EditCake';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import Category from './pages/Category';
+import User from './pages/User';
 function App() {
   console.log("MainLayout =", MainLayout);
   console.log("AdminLayout =", AdminLayout);
@@ -38,6 +39,7 @@ function App() {
         <Route path="/admin/add-cake" element={<AdminLayout><AddCake /></AdminLayout>} />
         <Route path="/admin/edit-cake/:id" element={<AdminLayout><EditCake /></AdminLayout>} />
         <Route path="/admin/categories" element={<AdminLayout><Category /></AdminLayout>} />
+        <Route path="/admin/users" element={<AdminLayout><User /></AdminLayout>} />
 
       </Routes>
     </Router>

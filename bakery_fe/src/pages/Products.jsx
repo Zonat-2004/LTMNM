@@ -52,6 +52,7 @@ const CakeListAdmin = () => {
                     <table className="table table-bordered table-striped text-center align-middle">
                         <thead className="table-danger">
                             <tr>
+                                <th>ID</th>
                                 <th>Tên bánh</th>
                                 <th>Mô tả</th>
                                 <th>Giá</th>
@@ -63,6 +64,7 @@ const CakeListAdmin = () => {
                         <tbody>
                             {cakes.map((cake) => (
                                 <tr key={cake._id}>
+                                    <td>{cake._id}</td> {/* Cột ID mới */}
                                     <td>{cake.name}</td>
                                     <td>{cake.description}</td>
                                     <td>{cake.price} VND</td>
@@ -97,7 +99,7 @@ const CakeListAdmin = () => {
                             ))}
                             {cakes.length === 0 && (
                                 <tr>
-                                    <td colSpan="6" className="text-center">Không có sản phẩm nào</td>
+                                    <td colSpan="7" className="text-center">Không có sản phẩm nào</td>
                                 </tr>
                             )}
                         </tbody>

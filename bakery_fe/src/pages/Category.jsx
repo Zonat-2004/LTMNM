@@ -80,16 +80,16 @@ const Category = () => {
         <table className="table table-bordered table-hover">
           <thead className="table-danger">
             <tr>
-              <th>STT</th>
+              <th>ID</th> {/* Cột ID */}
               <th>Tên danh mục</th>
               <th>Hành động</th>
             </tr>
           </thead>
           <tbody>
             {categories.length > 0 ? (
-              categories.map((cat, index) => (
+              categories.map((cat) => (
                 <tr key={cat._id}>
-                  <td>{index + 1}</td>
+                  <td>{cat._id}</td> {/* Hiển thị ID */}
                   <td>{cat.name}</td>
                   <td>
                     <button

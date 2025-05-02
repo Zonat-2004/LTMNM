@@ -76,15 +76,20 @@ class CakeListView(APIView):
 #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CakeDetailView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+    
     def get(self, request, pk):
+        # Tìm bánh kem theo id
         cake = get_object(db.cakes, pk)
         if not cake:
             return Response({'error': 'Không tìm thấy bánh kem!'}, status=status.HTTP_404_NOT_FOUND)
+        
         cake['_id'] = str(cake['_id'])
         cake['category_id'] = str(cake['category_id'])
         cake['category'] = cake['category_id']
         category = db.categories.find_one({'_id': ObjectId(cake['category_id'])})
         cake['category_name'] = category['name'] if category else None
+        
         serializer = CakeSerializer(cake)
         return Response(serializer.data)
 
@@ -104,6 +109,8 @@ class CakeDetailView(APIView):
             db.cakes.update_one({'_id': ObjectId(pk)}, {'$set': validated_data})
             validated_data['_id'] = pk
             validated_data['category_id'] = str(validated_data['category_id'])
+            validated_data['category'] = validated_data['category_id']  # Đưa lại 'category' để CakeSerializer không bị lỗi
+
             return Response(CakeSerializer(validated_data).data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -112,7 +119,7 @@ class CakeDetailView(APIView):
         if not cake:
             return Response({'error': 'Không tìm thấy bánh kem!'}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = CakeSerializer(cake, data=request.data, partial=True)  # Thêm partial=True để chỉ cập nhật các field gửi lên
+        serializer = CakeSerializer(cake, data=request.data, partial=True)
         if serializer.is_valid():
             validated_data = serializer.validated_data
             image = validated_data.pop('image', None)
@@ -123,6 +130,8 @@ class CakeDetailView(APIView):
             db.cakes.update_one({'_id': ObjectId(pk)}, {'$set': validated_data})
             validated_data['_id'] = pk
             validated_data['category_id'] = str(validated_data['category_id'])
+            validated_data['category'] = validated_data['category_id']  # Đưa lại 'category' để CakeSerializer không bị lỗi
+
             return Response(CakeSerializer(validated_data).data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

@@ -6,7 +6,6 @@ const EditCake = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // State chính
   const [cake, setCake] = useState({
     name: '',
     description: '',
@@ -18,36 +17,37 @@ const EditCake = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // File mới & preview
   const [selectedImage, setSelectedImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
 
-  // Lấy dữ liệu bánh + danh mục
   useEffect(() => {
-    console.log("Đang tải dữ liệu bánh với id:", id); // Log id
-    axios.get(`http://localhost:8000/api/cakes/${id}/`)
-      .then(r => {
-        console.log(r.data); // Kiểm tra dữ liệu trả về
-        setCake(r.data);
+    const fetchData = async () => {
+      try {
+        const cakeRes = await axios.get(`http://localhost:8000/api/cakes/${id}/`);
+        setCake(cakeRes.data);
         setLoading(false);
-      })
-      .catch(() => {
+      } catch (err) {
         setError('Không thể tải dữ liệu bánh.');
         setLoading(false);
-      });
+      }
 
-    axios.get('http://localhost:8000/api/categories/')
-      .then(r => setCategories(r.data))
-      .catch(() => setError('Không thể tải danh mục.'));
+      try {
+        const catRes = await axios.get('http://localhost:8000/api/categories/');
+        setCategories(catRes.data);
+      } catch (err) {
+        setError('Không thể tải danh mục.');
+      }
+    };
+
+    fetchData();
   }, [id]);
 
-
-  const handleChange = e => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setCake(prev => ({ ...prev, [name]: value }));
+    setCake((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleImageChange = e => {
+  const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
     setSelectedImage(file);
@@ -62,121 +62,125 @@ const EditCake = () => {
     formData.append('description', cake.description);
     formData.append('price', cake.price);
     formData.append('category', cake.category);
-
-    // **Chỉ** append 'image' khi có ảnh mới
     if (selectedImage) {
       formData.append('image', selectedImage);
     }
 
     try {
-      // Dùng PATCH để partial update
-      await axios.patch(
-        `http://localhost:8000/api/cakes/${id}/`,
-        formData
-      );
-      alert('Cập nhật thành công!');
-      navigate('/admin/products');
+      const response = await axios.patch(`http://localhost:8000/api/cakes/${id}/`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        validateStatus: (status) => (status >= 200 && status < 300) || status === 204
+      });
+
+      // Kiểm tra nếu có phản hồi hợp lệ, hiển thị thông báo thành công
+      if (response.status === 200) {
+        alert('Cập nhật thành công!');
+        navigate('/admin/products'); // Chuyển hướng đến trang danh sách bánh
+      }
     } catch (err) {
-      console.error(err.response?.data);
-      setError('Có lỗi xảy ra. Kiểm tra console để biết chi tiết.');
+      console.error(err.response?.data || err.message); // Log lỗi chi tiết
+      setError('Có lỗi xảy ra khi cập nhật. Kiểm tra console để biết chi tiết.');
     }
   };
-
 
   return (
     <div className="container mt-5">
       <h1 className="mb-4">Chỉnh sửa Bánh</h1>
-      {loading
-        ? <p>Đang tải...</p>
-        : error
-          ? <div className="alert alert-danger">{error}</div>
-          : (
-            <form onSubmit={handleSubmit} encType="multipart/form-data">
-              {/* Tên bánh */}
-              <div className="form-group">
-                <label>Tên bánh</label>
-                <input
-                  type="text"
-                  name="name"
-                  className="form-control"
-                  value={cake.name}
-                  onChange={handleChange}
-                  required
+      {loading ? (
+        <p>Đang tải...</p>
+      ) : error ? (
+        <div className="alert alert-danger">{error}</div>
+      ) : (
+        <form onSubmit={handleSubmit} encType="multipart/form-data">
+          <div className="form-group">
+            <label>Tên bánh</label>
+            <input
+              type="text"
+              name="name"
+              className="form-control"
+              value={cake.name}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-group mt-3">
+            <label>Mô tả</label>
+            <textarea
+              name="description"
+              className="form-control"
+              value={cake.description}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-group mt-3">
+            <label>Giá</label>
+            <input
+              type="number"
+              name="price"
+              className="form-control"
+              value={cake.price}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-group mt-3">
+            <label>Ảnh hiện tại</label>
+            {cake.image && (
+              <div className="my-2">
+                <img
+                  src={previewImage || `http://localhost:8000/${cake.image}`}
+                  alt={cake.name}
+                  style={{ width: 120, height: 120, objectFit: 'cover' }}
                 />
               </div>
+            )}
+            <input
+              type="file"
+              name="image"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="form-control"
+            />
+          </div>
 
-              {/* Mô tả */}
-              <div className="form-group mt-3">
-                <label>Mô tả</label>
-                <textarea
-                  name="description"
-                  className="form-control"
-                  value={cake.description}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+          <div className="form-group mt-3">
+            <label>Danh mục</label>
+            <select
+              name="category"
+              className="form-control"
+              value={cake.category}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Chọn danh mục</option>
+              {categories.map((cat) => (
+                <option key={cat._id} value={cat._id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
-              {/* Giá */}
-              <div className="form-group mt-3">
-                <label>Giá</label>
-                <input
-                  type="number"
-                  name="price"
-                  className="form-control"
-                  value={cake.price}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              {/* Ảnh */}
-              <div className="form-group mt-3">
-                <label>Ảnh hiện tại</label>
-                {cake.image && (
-                  <div className="my-2">
-                    <img
-                      src={previewImage || `http://localhost:8000/${cake.image}`}
-                      alt={cake.name}
-                      style={{ width: 120, height: 120, objectFit: 'cover' }}
-                    />
-                  </div>
-                )}
-                <input
-                  type="file"
-                  name="image"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="form-control"
-                />
-              </div>
-
-              {/* Danh mục */}
-              <div className="form-group mt-3">
-                <label>Danh mục</label>
-                <select
-                  name="category"
-                  className="form-control"
-                  value={cake.category}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Chọn danh mục</option>
-                  {categories.map(cat => (
-                    <option key={cat._id} value={cat._id}>{cat.name}</option>
-                  ))}
-                </select>
-
-              </div>
-
-              {/* Submit */}
-              <button type="submit" className="btn btn-success mt-4">
-                Lưu thay đổi
-              </button>
-            </form>
-
-          )
-      }
+          <div className="d-flex justify-content-start mt-4 space-x-4">
+            <button
+              type="button"
+              onClick={() => navigate('/admin/products')}
+              className="btn btn-secondary"
+            >
+              Quay lại
+            </button>
+            <button type="submit" className="btn btn-success">
+              Lưu thay đổi
+            </button>
+          </div>
+        </form>
+      )}
     </div>
   );
 };

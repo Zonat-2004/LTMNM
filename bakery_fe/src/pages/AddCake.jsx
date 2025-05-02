@@ -76,6 +76,10 @@ const AddCake = () => {
     }
   };
 
+  const handleGoBack = () => {
+    navigate('/admin/products'); // Quay lại trang danh sách bánh
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 to-purple-50 p-6">
       <div className="container max-w-md mx-auto bg-white p-8 rounded-2xl shadow-lg border border-pink-100 transform transition-all hover:shadow-xl">
@@ -179,12 +183,19 @@ const AddCake = () => {
             </div>
           </div>
 
-          <div className="text-center mt-8">
+          <div className="text-center mt-8 space-x-4">
             <button
               type="submit"
               className="bg-gradient-to-r from-pink-400 to-pink-600 hover:from-pink-500 hover:to-pink-700 text-black font-bold py-3 px-8 rounded-full shadow-md transform hover:scale-105 transition-all duration-300 flex items-center justify-center mx-auto"
             >
               <span className="mr-2">🍰</span> Thêm bánh
+            </button>
+            <button
+              type="button"
+              onClick={handleGoBack}
+              className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-8 rounded-full shadow-md transform hover:scale-105 transition-all duration-300"
+            >
+              Quay lại
             </button>
           </div>
         </form>

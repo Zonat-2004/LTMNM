@@ -13,34 +13,37 @@ const CakeList = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get('http://localhost:8000/api/categories/')
-      .then(res => setCategories(res.data))
-      .catch(err => console.error('Lỗi lấy danh mục:', err));
+    axios
+      .get('http://localhost:8000/api/categories/')
+      .then((res) => setCategories(res.data))
+      .catch((err) => console.error('Lỗi lấy danh mục:', err));
   }, []);
 
   useEffect(() => {
-    axios.get('http://localhost:8000/api/cakes/')
-      .then(res => {
+    axios
+      .get('http://localhost:8000/api/cakes/')
+      .then((res) => {
         setCakes(res.data);
         setFilteredCakes(res.data);
         setLoading(false);
       })
-      .catch(err => console.error('Lỗi khi tải bánh:', err));
+      .catch((err) => console.error('Lỗi khi tải bánh:', err));
   }, []);
 
   const handleFilter = () => {
     let filtered = cakes;
 
     if (selectedCategory) {
-      filtered = filtered.filter(cake => cake.category === selectedCategory);
+      filtered = filtered.filter((cake) => cake.category === selectedCategory);
     }
 
     if (searchTerm.trim()) {
       const keywords = searchTerm.toLowerCase().split(' ');
-      filtered = filtered.filter(cake =>
-        keywords.every(keyword =>
-          cake.name.toLowerCase().includes(keyword) ||
-          cake.description.toLowerCase().includes(keyword)
+      filtered = filtered.filter((cake) =>
+        keywords.every(
+          (keyword) =>
+            cake.name.toLowerCase().includes(keyword) ||
+            cake.description.toLowerCase().includes(keyword)
         )
       );
     }
@@ -65,13 +68,18 @@ const CakeList = () => {
     }
   };
 
-  const handleBuyNow = (cake) => {
-    navigate('/order', { state: { cake } });
-  };
-
   const handleAddToCart = (cake) => {
     const existingCart = JSON.parse(localStorage.getItem('cart')) || [];
-    existingCart.push(cake);
+
+    const cakeIndex = existingCart.findIndex((item) => item._id === cake._id);
+
+    if (cakeIndex >= 0) {
+      existingCart[cakeIndex].quantity += 1;
+    } else {
+      cake.quantity = 1;
+      existingCart.push(cake);
+    }
+
     localStorage.setItem('cart', JSON.stringify(existingCart));
     alert(`✅ Đã thêm "${cake.name}" vào giỏ hàng!`);
   };
@@ -98,24 +106,33 @@ const CakeList = () => {
           onChange={handleCategoryChange}
         >
           <option value="">-- Tất cả danh mục --</option>
-          {categories.map(cat => (
-            <option key={cat._id} value={cat._id}>{cat.name}</option>
+          {categories.map((cat) => (
+            <option key={cat._id} value={cat._id}>
+              {cat.name}
+            </option>
           ))}
         </select>
 
-        <button className="btn-filter" onClick={handleFilter}>Tìm kiếm</button>
+        <button className="btn-filter" onClick={handleFilter}>
+          Tìm kiếm
+        </button>
       </div>
 
       {showSearchResult && (searchTerm || selectedCategory) && (
         <p className="text-center mb-4 fw-bold text-secondary">
           Kết quả tìm kiếm
-          {searchTerm && <> cho từ khóa "<span className="text-danger">{searchTerm}</span>"</>}
+          {searchTerm && (
+            <>
+              {' '}
+              cho từ khóa "<span className="text-danger">{searchTerm}</span>"
+            </>
+          )}
           {selectedCategory && (
             <>
               {searchTerm && ' và'}
               {' danh mục '}
               "<span className="text-danger">
-                {categories.find(cat => cat._id === selectedCategory)?.name || ''}
+                {categories.find((cat) => cat._id === selectedCategory)?.name || ''}
               </span>"
             </>
           )}
@@ -141,8 +158,18 @@ const CakeList = () => {
                   <div className="cake-description">{cake.description}</div>
                   <div className="cake-price">Giá: {cake.price.toLocaleString()} VND</div>
                   <div className="d-flex gap-2 mt-2">
-                    <button className="btn-buy flex-fill" onClick={() => handleBuyNow(cake)}>💗 Mua ngay</button>
-                    <button className="btn-cart flex-fill" onClick={() => handleAddToCart(cake)}>🛒</button>
+                    <button
+                      className="btn-buy flex-fill"
+                      onClick={() => navigate('/order', { state: { cake } })}
+                    >
+                      💗 Mua ngay
+                    </button>
+                    <button
+                      className="btn-cart flex-fill"
+                      onClick={() => handleAddToCart(cake)}
+                    >
+                      🛒
+                    </button>
                   </div>
                 </div>
               </div>

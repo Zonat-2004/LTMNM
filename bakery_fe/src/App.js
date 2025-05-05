@@ -17,6 +17,7 @@ import Category from './pages/Category';
 import User from './pages/User';
 import OrderForm from './pages/OrderForm';
 import Order from './pages/Order';
+import Cart from './pages/Cart';
 function App() {
   console.log("MainLayout =", MainLayout);
   console.log("AdminLayout =", AdminLayout);
@@ -33,7 +34,8 @@ function App() {
         {/* Route trang người dùng */}
         <Route path="/" element={<MainLayout><Home /></MainLayout>} />
         <Route path="/cakes" element={<MainLayout><CakeList /></MainLayout>} />
-        <Route path="/order" element={<MainLayout><OrderForm /></MainLayout>} /> {/* Trang đặt bánh */}
+        <Route path="/orderform" element={<MainLayout><OrderForm /></MainLayout>} /> {/* Trang đặt bánh */}
+        <Route path="/cart" element={<MainLayout><Cart /></MainLayout>} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<Register />} />
 

@@ -78,4 +78,21 @@ class OrderSerializer(serializers.Serializer):
     status = serializers.CharField()
     created_at = serializers.DateTimeField()
     items = OrderItemSerializer(many=True)
+class CakeInCartSerializer(serializers.Serializer):
+    _id = ObjectIdField()
+    name = serializers.CharField()
+    description = serializers.CharField()
+    price = serializers.IntegerField()
+    image = serializers.CharField()
 
+class CartItemSerializer(serializers.Serializer):
+    cake = CakeInCartSerializer()
+    quantity = serializers.IntegerField()
+    total_price = serializers.IntegerField()
+
+class CartSerializer(serializers.Serializer):
+    _id = ObjectIdField(read_only=True)
+    user_id = ObjectIdField()
+    created_at = serializers.DateTimeField()
+    items = CartItemSerializer(many=True)
+    total_cart_price = serializers.IntegerField()

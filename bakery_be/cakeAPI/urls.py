@@ -1,4 +1,6 @@
 from django.urls import path
+
+from .views.order_views import OrderListCreateView
 from .views import (  # đã import sẵn trong __init__.py
     CakeListView, CakeDetailView, 
     CategoryListView, CategoryDetailView,
@@ -19,9 +21,7 @@ urlpatterns = [
     path('api/users/<str:pk>/', UserDetailView.as_view(), name='user-detail'),
     # path('api/payments/', PaymentListView.as_view(), name='payment-list'),
     # path('api/payments/<str:pk>/', PaymentDetailView.as_view(), name='payment-detail'),
-    # path('api/orders/', OrderListView.as_view(), name='order-list'),
-    # path('api/orders/<str:pk>/', OrderDetailView.as_view(), name='order-detail'),
-    
+    path('api/orders/', OrderListCreateView.as_view(), name='order-list-create'),
     # Home path
     path('', home, name='home'),
 ]

@@ -27,6 +27,7 @@ function AdminLayout({ children }) {
           <CustomLink to="/admin/products" icon="fas fa-birthday-cake" label="Sản phẩm bánh" />
           <CustomLink to="/admin/categories" icon="fas fa-list-alt" label="Danh mục" />
           <CustomLink to="/admin/users" icon="fas fa-users" label="Khách hàng" />
+          <CustomLink to="/admin/orders" icon="fas fa-box" label="Đơn hàng" />
           <div style={{ marginTop: 'auto' }}>
             <CustomLink to="/" icon="fas fa-arrow-left" label="Về Website" />
           </div>

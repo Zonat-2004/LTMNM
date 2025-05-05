@@ -15,6 +15,8 @@ import EditCake from './pages/EditCake';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import Category from './pages/Category';
 import User from './pages/User';
+import OrderForm from './pages/OrderForm';
+import Order from './pages/Order';
 function App() {
   console.log("MainLayout =", MainLayout);
   console.log("AdminLayout =", AdminLayout);
@@ -31,6 +33,7 @@ function App() {
         {/* Route trang người dùng */}
         <Route path="/" element={<MainLayout><Home /></MainLayout>} />
         <Route path="/cakes" element={<MainLayout><CakeList /></MainLayout>} />
+        <Route path="/order" element={<MainLayout><OrderForm /></MainLayout>} /> {/* Trang đặt bánh */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<Register />} />
 
@@ -40,6 +43,7 @@ function App() {
         <Route path="/admin/edit-cake/:id" element={<AdminLayout><EditCake /></AdminLayout>} />
         <Route path="/admin/categories" element={<AdminLayout><Category /></AdminLayout>} />
         <Route path="/admin/users" element={<AdminLayout><User /></AdminLayout>} />
+        <Route path="/admin/orders" element={<AdminLayout><Order /></AdminLayout>} />
 
       </Routes>
     </Router>

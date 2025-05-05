@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const CakeList = () => {
@@ -7,21 +8,22 @@ const CakeList = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [filteredCakes, setFilteredCakes] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [showSearchResult, setShowSearchResult] = useState(false); // State mới
+  const [showSearchResult, setShowSearchResult] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Lấy danh sách danh mục từ API
     axios.get('http://localhost:8000/api/categories/')
       .then(res => setCategories(res.data))
       .catch(err => console.error('Lỗi lấy danh mục:', err));
   }, []);
 
   useEffect(() => {
-    // Lấy danh sách bánh từ API
     axios.get('http://localhost:8000/api/cakes/')
       .then(res => {
         setCakes(res.data);
         setFilteredCakes(res.data);
+        setLoading(false);
       })
       .catch(err => console.error('Lỗi khi tải bánh:', err));
   }, []);
@@ -29,12 +31,10 @@ const CakeList = () => {
   const handleFilter = () => {
     let filtered = cakes;
 
-    // Lọc theo danh mục
     if (selectedCategory) {
       filtered = filtered.filter(cake => cake.category === selectedCategory);
     }
 
-    // Lọc theo từ khóa tìm kiếm
     if (searchTerm.trim()) {
       const keywords = searchTerm.toLowerCase().split(' ');
       filtered = filtered.filter(cake =>
@@ -45,31 +45,41 @@ const CakeList = () => {
       );
     }
 
-    setFilteredCakes(filtered);  // Cập nhật danh sách bánh đã lọc
-    setShowSearchResult(true); // Hiển thị kết quả tìm kiếm
+    setFilteredCakes(filtered);
+    setShowSearchResult(true);
   };
 
   const handleCategoryChange = (e) => {
-    setSelectedCategory(e.target.value);  // Cập nhật danh mục chọn
-    setShowSearchResult(false); // Ẩn kết quả tìm kiếm cho đến khi người dùng nhấn tìm kiếm
+    setSelectedCategory(e.target.value);
+    setShowSearchResult(false);
   };
 
   const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);  // Cập nhật từ khóa tìm kiếm
+    setSearchTerm(e.target.value);
   };
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      handleFilter();  // Lọc khi nhấn Enter
+      handleFilter();
     }
+  };
+
+  const handleBuyNow = (cake) => {
+    navigate('/order', { state: { cake } });
+  };
+
+  const handleAddToCart = (cake) => {
+    const existingCart = JSON.parse(localStorage.getItem('cart')) || [];
+    existingCart.push(cake);
+    localStorage.setItem('cart', JSON.stringify(existingCart));
+    alert(`✅ Đã thêm "${cake.name}" vào giỏ hàng!`);
   };
 
   return (
     <div className="container py-5">
       <h1 className="text-center mb-4 text-danger">🍰 Danh Sách Bánh 🍰</h1>
 
-      {/* Tìm kiếm và lọc */}
       <div className="mb-3 d-flex flex-column flex-md-row justify-content-center align-items-center gap-3">
         <div className="search-wrapper">
           <input
@@ -86,7 +96,6 @@ const CakeList = () => {
           className="form-select"
           value={selectedCategory}
           onChange={handleCategoryChange}
-          onKeyDown={handleKeyPress}
         >
           <option value="">-- Tất cả danh mục --</option>
           {categories.map(cat => (
@@ -97,7 +106,6 @@ const CakeList = () => {
         <button className="btn-filter" onClick={handleFilter}>Tìm kiếm</button>
       </div>
 
-      {/* Kết quả tìm kiếm thông báo */}
       {showSearchResult && (searchTerm || selectedCategory) && (
         <p className="text-center mb-4 fw-bold text-secondary">
           Kết quả tìm kiếm
@@ -114,7 +122,8 @@ const CakeList = () => {
         </p>
       )}
 
-      {/* Danh sách bánh */}
+      {loading && <p className="text-center">Đang tải...</p>}
+
       <div className="row">
         {filteredCakes.length > 0 ? (
           filteredCakes.map((cake) => (
@@ -131,7 +140,10 @@ const CakeList = () => {
                   <div className="cake-title">{cake.name}</div>
                   <div className="cake-description">{cake.description}</div>
                   <div className="cake-price">Giá: {cake.price.toLocaleString()} VND</div>
-                  <button className="btn-buy">💗 Mua ngay</button>
+                  <div className="d-flex gap-2 mt-2">
+                    <button className="btn-buy flex-fill" onClick={() => handleBuyNow(cake)}>💗 Mua ngay</button>
+                    <button className="btn-cart flex-fill" onClick={() => handleAddToCart(cake)}>🛒</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -207,6 +219,20 @@ const CakeList = () => {
 
         .btn-buy:hover {
           background: linear-gradient(135deg, #f06292, #ff85a2);
+        }
+
+        .btn-cart {
+          background-color: #ffe082;
+          color: #5d4037;
+          border: none;
+          border-radius: 30px;
+          padding: 10px;
+          font-weight: bold;
+          transition: background 0.3s;
+        }
+
+        .btn-cart:hover {
+          background-color: #ffd54f;
         }
 
         .btn-filter {

@@ -3,17 +3,18 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/Home.css';
 import banner1 from '../assets/banner1.png';
 import banner2 from '../assets/banner2.jpg';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';  
 import axios from 'axios';
 
 const Home = () => {
+  const navigate = useNavigate();
   const [featuredCakes, setFeaturedCakes] = useState([]);
 
   useEffect(() => {
     axios.get('http://localhost:8000/api/cakes/')
       .then(response => {
         const shuffledCakes = shuffleArray(response.data);
-        setFeaturedCakes(shuffledCakes.slice(0, 7)); // Lấy 7 sản phẩm ngẫu nhiên
+        setFeaturedCakes(shuffledCakes.slice(0, 7));
       })
       .catch(error => {
         console.error('Lỗi khi lấy sản phẩm:', error);
@@ -29,24 +30,37 @@ const Home = () => {
     return shuffledArray;
   };
 
-  // Cuộn sang trái
   const scrollLeft = () => {
     const container = document.getElementById('scroll-container');
     if (container.scrollLeft <= 0) {
-      container.scrollLeft = container.scrollWidth - container.offsetWidth; // Cuộn về cuối danh sách
+      container.scrollLeft = container.scrollWidth - container.offsetWidth;
     } else {
-      container.scrollBy({ left: -600, behavior: 'smooth' }); // Cuộn sang trái
+      container.scrollBy({ left: -600, behavior: 'smooth' });
     }
   };
 
-  // Cuộn sang phải
   const scrollRight = () => {
     const container = document.getElementById('scroll-container');
     if (container.scrollLeft + container.offsetWidth >= container.scrollWidth) {
-      container.scrollLeft = 0; // Cuộn về đầu danh sách
+      container.scrollLeft = 0;
     } else {
-      container.scrollBy({ left: 600, behavior: 'smooth' }); // Cuộn sang phải
+      container.scrollBy({ left: 600, behavior: 'smooth' });
     }
+  };
+
+  const handleAddToCart = (cake) => {
+    const existingCart = JSON.parse(localStorage.getItem('cart')) || [];
+    const cakeIndex = existingCart.findIndex(item => item._id === cake._id);
+
+    if (cakeIndex >= 0) {
+      existingCart[cakeIndex].quantity += 1;
+    } else {
+      cake.quantity = 1;
+      existingCart.push(cake);
+    }
+
+    localStorage.setItem('cart', JSON.stringify(existingCart));
+    alert(`✅ Đã thêm "${cake.name}" vào giỏ hàng!`);
   };
 
   return (
@@ -84,7 +98,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Sản phẩm nổi bật dạng cuộn ngang */}
       <section className="featured-products py-5">
         <div className="container position-relative">
           <h2 className="text-center mb-4 text-pink">Sản phẩm nổi bật</h2>
@@ -104,8 +117,15 @@ const Home = () => {
                 <div className="featured-cake-body d-flex flex-column">
                   <h5 className="featured-cake-title">{cake.name}</h5>
                   <p className="featured-cake-description">{cake.description}</p>
-                  <p className="featured-cake-price">{`Giá: ${cake.price} VNĐ`}</p>
-                  <button className="featured-btn-buy mt-auto">💗 Mua ngay</button>
+                  <p className="featured-cake-price">{`Giá: ${cake.price.toLocaleString()} VND`}</p>
+                  <div className="d-flex gap-2 mt-auto">
+                    <button className="featured-btn-buy flex-fill" onClick={() => navigate('/orderform', { state: { cake } })}>
+                      💗 Mua ngay
+                    </button>
+                    <button className="featured-btn-cart" onClick={() => handleAddToCart(cake)}>
+                      🛒
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -114,6 +134,68 @@ const Home = () => {
           <button className="scroll-btn right" onClick={scrollRight}>›</button>
         </div>
       </section>
+
+      <style>{`
+        .featured-btn-cart {
+          background-color: #ffe082;
+          color: #5d4037;
+          border: none;
+          border-radius: 20px; /* Nhỏ hơn một chút */
+          padding: 8px; /* Giảm kích thước */
+          font-weight: bold;
+          transition: background 0.3s;
+          width: 50px; /* Giảm chiều rộng */
+          height: 50px; /* Giảm chiều cao */
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .featured-btn-cart:hover {
+          background-color: #ffd54f;
+        }
+
+        .featured-btn-buy {
+          background: linear-gradient(135deg, #ff85a2, #f06292);
+          color: white;
+          border: none;
+          border-radius: 30px;
+          padding: 10px;
+          font-weight: bold;
+          transition: background 0.3s;
+          width: 100%;
+        }
+
+        .featured-btn-buy:hover {
+          background: linear-gradient(135deg, #f06292, #ff85a2);
+        }
+
+        .scroll-btn {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          background-color: rgba(0, 0, 0, 0.5);
+          color: white;
+          border: none;
+          font-size: 2rem;
+          padding: 10px;
+          cursor: pointer;
+          border-radius: 50%;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .scroll-btn.left {
+          left: 20px;
+        }
+
+        .scroll-btn.right {
+          right: 20px;
+        }
+
+        .scroll-btn:hover {
+          background-color: rgba(0, 0, 0, 0.7);
+        }
+      `}</style>
     </>
   );
 };

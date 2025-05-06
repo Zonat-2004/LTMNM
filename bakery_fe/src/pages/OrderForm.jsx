@@ -5,9 +5,7 @@ import qrImage from '../assets/qr.jpg';
 const OrderForm = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const cart = location.state?.cart;
-
-  const [cartItems, setCartItems] = useState(cart || []);
+  const [cartItems, setCartItems] = useState([]);
   const [userInfo, setUserInfo] = useState({
     name: '',
     email: '',
@@ -18,10 +16,20 @@ const OrderForm = () => {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    if (!cart || cart.length === 0) {
-      navigate('/cakelist');
+    const cake = location.state?.cake;
+    const cart = location.state?.cart;
+
+    if (cake) {
+      // Người dùng nhấn "Mua ngay" từ 1 sản phẩm
+      setCartItems([{ ...cake, quantity: 1 }]);
+    } else if (cart && cart.length > 0) {
+      // Người dùng đặt hàng từ giỏ hàng
+      setCartItems(cart);
+    } else {
+      // Không có gì để đặt hàng, quay lại trang trước
+      navigate('/');
     }
-  }, [cart, navigate]);
+  }, [location.state, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -46,7 +54,12 @@ const OrderForm = () => {
       return;
     }
 
-    // Gửi dữ liệu về API tại đây nếu cần...
+    // Gửi đơn hàng tới API tại đây nếu cần
+    console.log('Thông tin đặt hàng:', {
+      userInfo,
+      paymentMethod,
+      cartItems
+    });
 
     setMessage(`🎉 Đơn hàng thành công! Thanh toán: ${paymentMethod === 'cod' ? 'Khi nhận hàng' : 'Mã QR'}`);
   };

@@ -18,7 +18,7 @@ const Footer = () => {
             <div className="service-item">
               <i className="fas fa-birthday-cake"></i>
               <h5>Tasty Cupcakes</h5>
-              <p>Bánh ngon tuyệt vời.</p>
+              <p>Absolutely delicious cake</p>
             </div>
             <div className="service-item">
               <i className="fas fa-heart"></i>
@@ -80,9 +80,9 @@ const Footer = () => {
             <div>
               <h5>Contact Info</h5>
               <p className="fw-bold">(1800) 574 9687</p>
-              <p>Cakecious Store</p>
-              <p>256, Baker Street, New York, 5245</p>
-              <p><a href="mailto:cakeciousdemo@email.com">cakeciousdemo@email.com</a></p>
+              <p>TBK Baker</p>
+              <p>000 Lê Văn Sỹ </p>
+              <p><a href="mailto:cakeciousdemo@email.com">tbkbakery000@gmail.com</a></p>
             </div>
           </div>
 

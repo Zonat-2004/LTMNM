@@ -32,7 +32,7 @@ const Cart = () => {
   };
 
   const handleOrder = () => {
-    navigate('/orderform', { state: { cart } });  // Truyền giỏ hàng vào trang OrderForm
+    navigate('/orderform', { state: { cart } });
   };
 
   return (
@@ -56,9 +56,14 @@ const Cart = () => {
                   <div className="card-body text-center">
                     <h5 className="card-title text-danger">{item.name}</h5>
                     <p className="card-text text-muted">{item.description}</p>
-                    <p className="fw-bold mb-2">Giá: {item.price.toLocaleString()} VND</p>
+                    <p className="fw-bold mb-1">Giá: {item.price.toLocaleString()} VND</p>
+                    
+                    {/* Thành tiền - đẹp hơn */}
+                    <p className="fw-semibold text-white bg-success bg-opacity-75 py-2 px-3 rounded d-inline-block">
+                      Thành tiền: {(item.price * item.quantity).toLocaleString()} VND
+                    </p>
 
-                    <div className="d-flex justify-content-center align-items-center gap-3 mb-3">
+                    <div className="d-flex justify-content-center align-items-center gap-3 mb-3 mt-3">
                       <button
                         className="btn btn-outline-danger"
                         onClick={() => updateQuantity(item._id, item.quantity - 1)}

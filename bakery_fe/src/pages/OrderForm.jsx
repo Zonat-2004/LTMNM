@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import qrImage from '../assets/qr.jpg'; // Điều chỉnh đường dẫn tùy theo vị trí file
+import qrImage from '../assets/qr.jpg';
 
 const OrderForm = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const cart = location.state?.cart; // Nhận giỏ hàng từ trang trước
+  const cart = location.state?.cart;
 
+  const [cartItems, setCartItems] = useState(cart || []);
   const [userInfo, setUserInfo] = useState({
     name: '',
     email: '',
@@ -18,25 +19,24 @@ const OrderForm = () => {
 
   useEffect(() => {
     if (!cart || cart.length === 0) {
-      navigate('/cakelist'); // Nếu giỏ hàng trống, điều hướng về trang danh sách bánh
+      navigate('/cakelist');
     }
   }, [cart, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setUserInfo({
-      ...userInfo,
-      [name]: value
-    });
+    setUserInfo({ ...userInfo, [name]: value });
   };
 
   const handleQuantityChange = (index, value) => {
-    const updatedCart = [...cart];
-    updatedCart[index].quantity = value;
-    setUserInfo({
-      ...userInfo,
-      cart: updatedCart
-    });
+    const updated = [...cartItems];
+    updated[index].quantity = value;
+    setCartItems(updated);
+  };
+
+  const handleRemoveItem = (id) => {
+    const updated = cartItems.filter(item => item._id !== id);
+    setCartItems(updated);
   };
 
   const handleSubmit = (e) => {
@@ -45,24 +45,26 @@ const OrderForm = () => {
       setMessage('❌ Vui lòng điền đầy đủ thông tin.');
       return;
     }
+
+    // Gửi dữ liệu về API tại đây nếu cần...
+
     setMessage(`🎉 Đơn hàng thành công! Thanh toán: ${paymentMethod === 'cod' ? 'Khi nhận hàng' : 'Mã QR'}`);
   };
 
   const getTotalPrice = () => {
-    return cart.reduce((total, item) => total + item.price * item.quantity, 0);
+    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
   };
 
   return (
     <div className="container py-5">
       <h2 className="text-center text-primary mb-4">🛍️ Đặt Hàng</h2>
 
-      {!cart || cart.length === 0 ? (
+      {cartItems.length === 0 ? (
         <div className="alert alert-danger text-center">
           🛑 Không có sản phẩm trong giỏ hàng.
         </div>
       ) : (
         <div className="row">
-          {/* Cột trái - Danh sách sản phẩm */}
           <div className="col-md-8">
             <table className="table table-bordered table-striped">
               <thead className="table-dark">
@@ -76,7 +78,7 @@ const OrderForm = () => {
                 </tr>
               </thead>
               <tbody>
-                {cart.map((cake, index) => (
+                {cartItems.map((cake, index) => (
                   <tr key={cake._id}>
                     <td>
                       <img
@@ -102,10 +104,7 @@ const OrderForm = () => {
                     <td>
                       <button
                         className="btn btn-outline-danger btn-sm"
-                        onClick={() => {
-                          const updatedCart = cart.filter(item => item._id !== cake._id);
-                          setUserInfo({ ...userInfo, cart: updatedCart });
-                        }}
+                        onClick={() => handleRemoveItem(cake._id)}
                       >
                         <i className="fas fa-trash"></i>
                       </button>
@@ -116,7 +115,6 @@ const OrderForm = () => {
             </table>
           </div>
 
-          {/* Cột phải - Thông tin khách hàng và thanh toán */}
           <div className="col-md-4">
             <form onSubmit={handleSubmit} className="p-4 border rounded shadow-sm bg-light">
               <div className="mb-3">

@@ -160,7 +160,7 @@ const CakeList = () => {
                   <div className="d-flex gap-2 mt-2">
                     <button
                       className="btn-buy flex-fill"
-                      onClick={() => navigate('/order', { state: { cake } })}
+                      onClick={() => navigate('/orderform', { state: { cake } })}
                     >
                       💗 Mua ngay
                     </button>

@@ -79,7 +79,7 @@ class CakeDetailView(APIView):
     parser_classes = [MultiPartParser, FormParser]
     
     def get(self, request, pk):
-        # Tìm bánh kem theo id
+        # Tìm bánh kem theo tên
         cake = get_object(db.cakes, pk)
         if not cake:
             return Response({'error': 'Không tìm thấy bánh kem!'}, status=status.HTTP_404_NOT_FOUND)

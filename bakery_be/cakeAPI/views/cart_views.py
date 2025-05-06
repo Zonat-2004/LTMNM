@@ -94,3 +94,31 @@ class AddToCartAPIView(APIView):
             cart_collection.insert_one(new_cart)
 
         return Response({"message": "Thêm vào giỏ hàng thành công"}, status=status.HTTP_200_OK)
+class AllCartsAPIView(APIView):
+    def get(self, request):
+        carts = list(cart_collection.find())
+        result = []
+
+        # Duyệt qua tất cả các giỏ hàng
+        for cart in carts:
+            # Chuyển ObjectId sang chuỗi
+            cart["_id"] = str(cart["_id"])
+            cart["user_id"] = str(cart["user_id"])
+            cart["created_at"] = cart["created_at"].isoformat() if "created_at" in cart else ""
+
+            # Chỉ lấy những thông tin cần thiết
+            simplified_cart = {
+                "user_id": cart["user_id"],
+                "created_at": cart["created_at"],
+                "total_cart_price": cart["total_cart_price"],
+                "items_count": len(cart["items"]),  # Số lượng sản phẩm
+                "items": [{
+                    "cake_name": item["cake"]["name"],
+                    "quantity": item["quantity"],
+                    "total_price": item["total_price"]
+                } for item in cart["items"]]
+            }
+
+            result.append(simplified_cart)
+
+        return Response(result, status=status.HTTP_200_OK)

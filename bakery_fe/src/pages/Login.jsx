@@ -16,8 +16,9 @@ const LoginPage = () => {
         phone,
         password,
       });
-      alert(res.data.message);
-      // Lưu user vào localStorage nếu cần: localStorage.setItem('user', JSON.stringify(res.data.user));
+      // alert(res.data.message);
+      // ✅ Lưu thông tin người dùng vào localStorage
+      localStorage.setItem("user", JSON.stringify(res.data.user));
       navigate('/');
     } catch (err) {
       setErrorMessage(err.response?.data?.error || 'Đăng nhập thất bại.');

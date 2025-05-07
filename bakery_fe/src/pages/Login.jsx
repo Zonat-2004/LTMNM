@@ -1,16 +1,39 @@
-
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const LoginPage = () => {
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await axios.post('http://localhost:8000/api/login/', {
+        phone,
+        password,
+      });
+      alert(res.data.message);
+      // Lưu user vào localStorage nếu cần: localStorage.setItem('user', JSON.stringify(res.data.user));
+      navigate('/');
+    } catch (err) {
+      setErrorMessage(err.response?.data?.error || 'Đăng nhập thất bại.');
+    }
+  };
+
   return (
     <div style={styles.body}>
       <div style={styles.container}>
         <h2 style={styles.title}>ĐĂNG NHẬP</h2>
 
-        {/* Nếu có thông báo lỗi, bạn sẽ render ở đây */}
+        {errorMessage && (
+          <div style={{ color: 'red', marginBottom: '10px' }}>{errorMessage}</div>
+        )}
 
-        <form method="post">
+        <form onSubmit={handleLogin}>
           <div style={styles.inputGroup}>
             <label htmlFor="phone">Số điện thoại</label>
             <input
@@ -18,6 +41,8 @@ const LoginPage = () => {
               id="phone"
               name="phone"
               placeholder="Nhập số điện thoại"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
               required
               style={styles.input}
             />
@@ -29,6 +54,8 @@ const LoginPage = () => {
               id="password"
               name="password"
               placeholder="Nhập mật khẩu"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
               style={styles.input}
             />

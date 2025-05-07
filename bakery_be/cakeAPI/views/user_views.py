@@ -61,3 +61,19 @@ class UserDetailView(APIView):
             return Response({'error': 'Không tìm thấy người dùng!'}, status=status.HTTP_404_NOT_FOUND)
         db.users.delete_one({'_id': ObjectId(pk)})
         return Response({'message': 'Xóa người dùng thành công.'}, status=status.HTTP_204_NO_CONTENT)
+
+class LoginView(APIView):
+    def post(self, request):
+        phone = request.data.get('phone')
+        password = request.data.get('password')
+
+        if not phone or not password:
+            return Response({'error': 'Vui lòng nhập đầy đủ số điện thoại và mật khẩu.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = db.users.find_one({'phone': phone, 'password': password})
+
+        if not user:
+            return Response({'error': 'Số điện thoại hoặc mật khẩu không đúng.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user['_id'] = str(user['_id'])
+        return Response({'message': 'Đăng nhập thành công', 'user': user}, status=status.HTTP_200_OK)

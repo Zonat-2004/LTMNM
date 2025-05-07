@@ -6,7 +6,7 @@ from .views.cart_views import CartAPIView  # đã import sẵn trong __init__.py
 from .views import (  # đã import sẵn trong __init__.py
     CakeListView, CakeDetailView, 
     CategoryListView, CategoryDetailView,
-    UserListView, UserDetailView,
+    UserListView, UserDetailView,LoginView,
     home
 )
 from django.conf import settings
@@ -21,6 +21,7 @@ urlpatterns = [
     path('api/categories/<str:pk>/', CategoryDetailView.as_view(), name='category-detail'),
     path('api/users/', UserListView.as_view(), name='user-list'),
     path('api/users/<str:pk>/', UserDetailView.as_view(), name='user-detail'),
+    path('api/login/', LoginView.as_view()),  # <- Đường dẫn đăng nhập mới
     # path('api/payments/', PaymentListView.as_view(), name='payment-list'),
     # path('api/payments/<str:pk>/', PaymentDetailView.as_view(), name='payment-detail'),
     path('api/orders/', OrderListCreateView.as_view(), name='order-list-create'),

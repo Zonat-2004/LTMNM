@@ -1,55 +1,56 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Register = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const { name, phone, email, password, confirmPassword } = formData;
+
+    if (password !== confirmPassword) {
+      alert('Mật khẩu xác nhận không khớp!');
+      return;
+    }
+
+    try {
+      await axios.post('http://localhost:8000/api/users/', {
+        name,
+        phone,
+        email,
+        password,
+      });
+      alert('Đăng ký thành công!');
+      navigate('/login');
+    } catch (error) {
+      alert('Đăng ký thất bại: ' + (error.response?.data?.error || error.message));
+    }
+  };
+
   return (
     <div style={styles.body}>
       <div style={styles.container}>
         <h2 style={styles.title}>ĐĂNG KÝ</h2>
-        <form>
-          <div style={styles.formGroup}>
-            <label>Họ và Tên</label>
-            <div style={styles.inputGroup}>
-              <span style={styles.icon}><i className="fas fa-user"></i></span>
-              <input type="text" placeholder="Nhập họ và tên" required style={styles.input} />
-            </div>
-          </div>
-
-          <div style={styles.formGroup}>
-            <label>Số điện thoại</label>
-            <div style={styles.inputGroup}>
-              <span style={styles.icon}><i className="fas fa-phone"></i></span>
-              <input type="text" placeholder="Nhập số điện thoại" required style={styles.input} />
-            </div>
-          </div>
-
-          <div style={styles.formGroup}>
-            <label>Email</label>
-            <div style={styles.inputGroup}>
-              <span style={styles.icon}><i className="fas fa-envelope"></i></span>
-              <input type="email" placeholder="Nhập email" required style={styles.input} />
-            </div>
-          </div>
-
-          <div style={styles.formGroup}>
-            <label>Mật khẩu</label>
-            <div style={styles.inputGroup}>
-              <span style={styles.icon}><i className="fas fa-lock"></i></span>
-              <input type="password" placeholder="Nhập mật khẩu" required style={styles.input} />
-            </div>
-          </div>
-
-          <div style={styles.formGroup}>
-            <label>Xác nhận mật khẩu</label>
-            <div style={styles.inputGroup}>
-              <span style={styles.icon}><i className="fas fa-key"></i></span>
-              <input type="password" placeholder="Xác nhận mật khẩu" required style={styles.input} />
-            </div>
-          </div>
-
+        <form onSubmit={handleSubmit}>
+          <InputField label="Họ và Tên" name="name" value={formData.name} onChange={handleChange} icon="fas fa-user" />
+          <InputField label="Số điện thoại" name="phone" value={formData.phone} onChange={handleChange} icon="fas fa-phone" />
+          <InputField label="Email" name="email" type="email" value={formData.email} onChange={handleChange} icon="fas fa-envelope" />
+          <InputField label="Mật khẩu" name="password" type="password" value={formData.password} onChange={handleChange} icon="fas fa-lock" />
+          <InputField label="Xác nhận mật khẩu" name="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleChange} icon="fas fa-key" />
           <button type="submit" style={styles.button}>ĐĂNG KÝ</button>
         </form>
-
         <p style={styles.text}>
           Bạn đã có tài khoản? <Link to="/login" style={styles.link}>Đăng nhập</Link>
         </p>
@@ -58,6 +59,25 @@ const Register = () => {
     </div>
   );
 };
+
+// Component cho mỗi ô nhập
+const InputField = ({ label, name, type = "text", value, onChange, icon }) => (
+  <div style={styles.formGroup}>
+    <label>{label}</label>
+    <div style={styles.inputGroup}>
+      <span style={styles.icon}><i className={icon}></i></span>
+      <input
+        type={type}
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder={`Nhập ${label.toLowerCase()}`}
+        required
+        style={styles.input}
+      />
+    </div>
+  </div>
+);
 
 const styles = {
   body: {
@@ -77,8 +97,6 @@ const styles = {
     width: '420px',
     textAlign: 'center',
     border: '6px solid #ff66b2',
-    transform: 'scale(0.9)',
-    transformOrigin: 'center',
   },
   title: {
     fontWeight: 'bold',

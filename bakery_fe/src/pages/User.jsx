@@ -5,6 +5,8 @@ const User = () => {
   const [users, setUsers] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
   const [updatedUser, setUpdatedUser] = useState({ name: '', email: '', phone: '', password: '' });
+  const [newUser, setNewUser] = useState({ name: '', email: '', phone: '', password: '' });
+  const [isAdding, setIsAdding] = useState(false);
 
   useEffect(() => {
     axios.get('http://localhost:8000/api/users/')
@@ -15,12 +17,7 @@ const User = () => {
   const handleEditUser = (id) => {
     const userToEdit = users.find((usr) => usr._id === id);
     setEditingUser(userToEdit);
-    setUpdatedUser({
-      name: userToEdit.name,
-      email: userToEdit.email,
-      phone: userToEdit.phone,
-      password: userToEdit.password,
-    });
+    setUpdatedUser({ ...userToEdit });
   };
 
   const handleUpdateUser = () => {
@@ -46,12 +43,24 @@ const User = () => {
       .catch((err) => console.error('Lỗi khi xóa người dùng:', err));
   };
 
+  const handleAddUser = () => {
+    if (!newUser.name || !newUser.email || !newUser.phone || !newUser.password) return;
+
+    axios.post('http://localhost:8000/api/users/', newUser)
+      .then((res) => {
+        setUsers([...users, res.data]);
+        setNewUser({ name: '', email: '', phone: '', password: '' });
+        setIsAdding(false);
+      })
+      .catch((err) => console.error('Lỗi khi thêm người dùng:', err));
+  };
+
   return (
     <div className="container py-5">
       <h2 className="text-center text-danger mb-4">👤 Danh sách người dùng</h2>
 
       <div className="text-end mb-4">
-        <button className="btn btn-success">
+        <button className="btn btn-success" onClick={() => setIsAdding(true)}>
           ➕ Thêm Người Dùng
         </button>
       </div>
@@ -78,12 +87,8 @@ const User = () => {
                   <td>{user.phone}</td>
                   <td>{user.password}</td>
                   <td>
-                    <button className="btn btn-warning btn-sm" onClick={() => handleEditUser(user._id)}>
-                      ✏️ Sửa
-                    </button>
-                    <button className="btn btn-danger btn-sm ms-2" onClick={() => handleDeleteUser(user._id)}>
-                      🗑️ Xóa
-                    </button>
+                    <button className="btn btn-warning btn-sm" onClick={() => handleEditUser(user._id)}>✏️ Sửa</button>
+                    <button className="btn btn-danger btn-sm ms-2" onClick={() => handleDeleteUser(user._id)}>🗑️ Xóa</button>
                   </td>
                 </tr>
               ))
@@ -101,50 +106,45 @@ const User = () => {
         <div className="card mt-5 shadow-sm p-4">
           <h4 className="mb-4 text-primary text-center">✏️ Cập nhật thông tin người dùng</h4>
           <div className="row g-3">
-            <div className="col-md-6">
-              <label className="form-label">Tên</label>
-              <input
-                type="text"
-                className="form-control"
-                value={updatedUser.name}
-                onChange={(e) => setUpdatedUser({ ...updatedUser, name: e.target.value })}
-              />
-            </div>
-            <div className="col-md-6">
-              <label className="form-label">Email</label>
-              <input
-                type="email"
-                className="form-control"
-                value={updatedUser.email}
-                onChange={(e) => setUpdatedUser({ ...updatedUser, email: e.target.value })}
-              />
-            </div>
-            <div className="col-md-6">
-              <label className="form-label">Số điện thoại</label>
-              <input
-                type="text"
-                className="form-control"
-                value={updatedUser.phone}
-                onChange={(e) => setUpdatedUser({ ...updatedUser, phone: e.target.value })}
-              />
-            </div>
-            <div className="col-md-6">
-              <label className="form-label">Mật khẩu</label>
-              <input
-                type="password"
-                className="form-control"
-                value={updatedUser.password}
-                onChange={(e) => setUpdatedUser({ ...updatedUser, password: e.target.value })}
-              />
-            </div>
+            {['name', 'email', 'phone', 'password'].map((field) => (
+              <div className="col-md-6" key={field}>
+                <label className="form-label">{field === 'phone' ? 'Số điện thoại' : field.charAt(0).toUpperCase() + field.slice(1)}</label>
+                <input
+                  type={field === 'password' ? 'password' : 'text'}
+                  className="form-control"
+                  value={updatedUser[field]}
+                  onChange={(e) => setUpdatedUser({ ...updatedUser, [field]: e.target.value })}
+                />
+              </div>
+            ))}
           </div>
           <div className="mt-4 text-end">
-            <button className="btn btn-primary me-2" onClick={handleUpdateUser}>
-              ✅ Cập nhật
-            </button>
-            <button className="btn btn-secondary" onClick={() => setEditingUser(null)}>
-              ❌ Hủy
-            </button>
+            <button className="btn btn-primary me-2" onClick={handleUpdateUser}>✅ Cập nhật</button>
+            <button className="btn btn-secondary" onClick={() => setEditingUser(null)}>❌ Hủy</button>
+          </div>
+        </div>
+      )}
+
+      {/* Form thêm người dùng */}
+      {isAdding && (
+        <div className="card mt-5 shadow-sm p-4">
+          <h4 className="mb-4 text-success text-center">➕ Thêm người dùng mới</h4>
+          <div className="row g-3">
+            {['name', 'email', 'phone', 'password'].map((field) => (
+              <div className="col-md-6" key={field}>
+                <label className="form-label">{field === 'phone' ? 'Số điện thoại' : field.charAt(0).toUpperCase() + field.slice(1)}</label>
+                <input
+                  type={field === 'password' ? 'password' : 'text'}
+                  className="form-control"
+                  value={newUser[field]}
+                  onChange={(e) => setNewUser({ ...newUser, [field]: e.target.value })}
+                />
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 text-end">
+            <button className="btn btn-success me-2" onClick={handleAddUser}>✅ Thêm mới</button>
+            <button className="btn btn-secondary" onClick={() => setIsAdding(false)}>❌ Hủy</button>
           </div>
         </div>
       )}
@@ -154,31 +154,24 @@ const User = () => {
           text-align: center;
           vertical-align: middle;
         }
-
         .table-danger {
           background-color: #ffccd5;
         }
-
         .btn {
           border-radius: 8px;
         }
-
         .container {
           max-width: 1200px;
         }
-
         .btn:hover {
           opacity: 0.8;
         }
-
         .table-hover tbody tr:hover {
           background-color: #fafafa;
         }
-
         .form-control {
           border-radius: 8px;
         }
-
         .card {
           border-radius: 12px;
           background-color: #fdfdfd;

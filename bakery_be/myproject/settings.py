@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'cakeAPI',  # Your app name
     'rest_framework',
     'corsheaders',  
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -144,5 +145,6 @@ REST_FRAMEWORK = {
       'rest_framework.parsers.JSONParser',
       'rest_framework.parsers.MultiPartParser',
       'rest_framework.parsers.FormParser',
+      'rest_framework_simplejwt.authentication.JWTAuthentication',
   ],
 }

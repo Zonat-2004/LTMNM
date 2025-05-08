@@ -1,5 +1,7 @@
 from django.urls import path
 
+from .views.views_auth import LoginAPIView  # đã import sẵn trong __init__.py
+from .views.cake_views import CakeListView, CakeDetailView  # đã import sẵn trong __init__.py
 from .views.order_views import OrderListCreateView
 from .views.cart_views import AddToCartAPIView, AllCartsAPIView  # đã import sẵn trong __init__.py
 from .views.cart_views import CartAPIView  # đã import sẵn trong __init__.py
@@ -31,9 +33,8 @@ urlpatterns = [
     path('api/orders/', OrderListCreateView.as_view(), name='order-list-create'),
     path('cart/', CartAPIView.as_view(), name='cart-list'),
     path('cart/add/', AddToCartAPIView.as_view(), name='add-to-cart'),
+    path('api/token/', LoginAPIView.as_view(), name='login'),
     path('carts/', AllCartsAPIView.as_view(), name='all-carts'),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     # Home path
     path('', home, name='home'),
 ]

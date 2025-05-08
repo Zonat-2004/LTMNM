@@ -16,10 +16,17 @@ const LoginPage = () => {
         phone,
         password,
       });
-      // alert(res.data.message);
-      // ✅ Lưu thông tin người dùng vào localStorage
-      localStorage.setItem("user", JSON.stringify(res.data.user));
-      navigate('/');
+
+      // Lưu thông tin người dùng và JWT token vào localStorage
+      localStorage.setItem('access', res.data.access); // JWT token
+      localStorage.setItem('user', JSON.stringify(res.data.user)); // Thông tin người dùng
+
+      // Điều hướng đến trang quản trị nếu là admin, hoặc trang chủ nếu là người dùng bình thường
+      if (res.data.user.is_staff) {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       setErrorMessage(err.response?.data?.error || 'Đăng nhập thất bại.');
     }
@@ -67,11 +74,18 @@ const LoginPage = () => {
         </form>
 
         <div style={styles.registerLink}>
-          Bạn chưa có tài khoản? <Link to="/register" style={styles.link}>Đăng ký ngay</Link>
+          Bạn chưa có tài khoản?{' '}
+          <Link to="/register" style={styles.link}>
+            Đăng ký ngay
+          </Link>
         </div>
 
-        <Link to="/forgot-password" style={styles.forgotPassword}>Quên mật khẩu</Link>
-        <Link to="/" style={styles.backButton}>⬅ Quay lại</Link>
+        <Link to="/forgot-password" style={styles.forgotPassword}>
+          Quên mật khẩu
+        </Link>
+        <Link to="/" style={styles.backButton}>
+          ⬅ Quay lại
+        </Link>
       </div>
     </div>
   );

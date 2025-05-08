@@ -1,4 +1,3 @@
-// src/App.jsx
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import React from "react";
 import MainLayout from "./layout/MainLayout";
@@ -16,39 +15,51 @@ import 'bootstrap/dist/js/bootstrap.bundle.min';
 import Category from './pages/Category';
 import User from './pages/User';
 import OrderForm from './pages/OrderForm';
-// import Order from './pages/Order';
 import Cart from './pages/Cart';
 import AdminCartPage from './pages/AdminCartPage';
+import ProtectedRoute from './pages/ProtectedRoute';
+
 function App() {
-  console.log("MainLayout =", MainLayout);
-  console.log("AdminLayout =", AdminLayout);
-  console.log("AddCake =", AddCake);
-  console.log("Home =", Home);
-  console.log("Admin =", Admin);
-  console.log("CakeList =", CakeList);
-  console.log("LoginPage =", LoginPage);
-  console.log("Register =", Register);
-  console.log("EditCake =", EditCake);
   return (
     <Router>
       <Routes>
         {/* Route trang người dùng */}
         <Route path="/" element={<MainLayout><Home /></MainLayout>} />
         <Route path="/cakes" element={<MainLayout><CakeList /></MainLayout>} />
-        <Route path="/orderform" element={<MainLayout><OrderForm /></MainLayout>} /> {/* Trang đặt bánh */}
+        <Route path="/orderform" element={<MainLayout><OrderForm /></MainLayout>} />
         <Route path="/cart" element={<MainLayout><Cart /></MainLayout>} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<Register />} />
 
-        <Route path="/admin" element={<AdminLayout><Admin /></AdminLayout>} />
-        <Route path="/admin/products" element={<AdminLayout><CakeListAdmin /></AdminLayout>} />
-        <Route path="/admin/add-cake" element={<AdminLayout><AddCake /></AdminLayout>} />
-        <Route path="/admin/edit-cake/:id" element={<AdminLayout><EditCake /></AdminLayout>} />
-        <Route path="/admin/categories" element={<AdminLayout><Category /></AdminLayout>} />
-        <Route path="/admin/users" element={<AdminLayout><User /></AdminLayout>} />
-        {/* <Route path="/admin/orders" element={<AdminLayout><Order /></AdminLayout>} /> */}
-        <Route path="/admin/carts" element={<AdminLayout><AdminCartPage /></AdminLayout>} />
-
+        {/* Các route admin cần bảo vệ */}
+        <Route 
+          path="/admin" 
+          element={<ProtectedRoute element={<AdminLayout><Admin /></AdminLayout>} isAdmin={true} />} 
+        />
+        <Route 
+          path="/admin/products" 
+          element={<ProtectedRoute element={<AdminLayout><CakeListAdmin /></AdminLayout>} isAdmin={true} />} 
+        />
+        <Route 
+          path="/admin/add-cake" 
+          element={<ProtectedRoute element={<AdminLayout><AddCake /></AdminLayout>} isAdmin={true} />} 
+        />
+        <Route 
+          path="/admin/edit-cake/:id" 
+          element={<ProtectedRoute element={<AdminLayout><EditCake /></AdminLayout>} isAdmin={true} />} 
+        />
+        <Route 
+          path="/admin/categories" 
+          element={<ProtectedRoute element={<AdminLayout><Category /></AdminLayout>} isAdmin={true} />} 
+        />
+        <Route 
+          path="/admin/users" 
+          element={<ProtectedRoute element={<AdminLayout><User /></AdminLayout>} isAdmin={true} />} 
+        />
+        <Route 
+          path="/admin/carts" 
+          element={<ProtectedRoute element={<AdminLayout><AdminCartPage /></AdminLayout>} isAdmin={true} />} 
+        />
       </Routes>
     </Router>
   );

@@ -9,6 +9,10 @@ from .views import (  # đã import sẵn trong __init__.py
     UserListView, UserDetailView,LoginView,
     home
 )
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -28,6 +32,8 @@ urlpatterns = [
     path('cart/', CartAPIView.as_view(), name='cart-list'),
     path('cart/add/', AddToCartAPIView.as_view(), name='add-to-cart'),
     path('carts/', AllCartsAPIView.as_view(), name='all-carts'),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     # Home path
     path('', home, name='home'),
 ]

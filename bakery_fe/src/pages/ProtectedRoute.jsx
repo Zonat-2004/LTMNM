@@ -12,7 +12,7 @@ const ProtectedRoute = ({ element: Component, isAdmin, ...rest }) => {
       <Navigate to="/login" />
     ) : isAdmin && !user?.is_staff ? (
       // Nếu yêu cầu quyền admin nhưng người dùng không phải admin
-      <Navigate to="/" />
+      <Navigate to="/login" />
     ) : (
       // Nếu đã đăng nhập và có quyền truy cập, render component
       Component

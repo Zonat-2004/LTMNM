@@ -59,6 +59,7 @@ class UserSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField()
     phone = serializers.CharField(max_length=15)
+    is_staff = serializers.BooleanField(default=False)  # 
 class PaymentSerializer(serializers.Serializer):
     _id = serializers.CharField(read_only=True)
     order_id = serializers.CharField()

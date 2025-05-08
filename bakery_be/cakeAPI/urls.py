@@ -1,5 +1,5 @@
 from django.urls import path
-
+from .views.views_update import update_user_staff_status  # đã import sẵn trong __init__.py
 from .views.views_auth import LoginAPIView  # đã import sẵn trong __init__.py
 from .views.cake_views import CakeListView, CakeDetailView  # đã import sẵn trong __init__.py
 from .views.order_views import OrderListCreateView
@@ -35,6 +35,7 @@ urlpatterns = [
     path('cart/add/', AddToCartAPIView.as_view(), name='add-to-cart'),
     path('api/token/', LoginAPIView.as_view(), name='login'),
     path('carts/', AllCartsAPIView.as_view(), name='all-carts'),
+    path('users/<str:pk>/set-staff/', update_user_staff_status),
     # Home path
     path('', home, name='home'),
 ]

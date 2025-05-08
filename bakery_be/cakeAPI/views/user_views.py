@@ -21,7 +21,8 @@ class UserListView(APIView):
                 'name': data['name'],
                 'email': data['email'],
                 'password': data['password'],
-                'phone': data['phone']
+                'phone': data['phone'],
+                'is_staff': data.get('is_staff', False)
             }
             result = db.users.insert_one(new_user)
             new_user['_id'] = str(result.inserted_id)

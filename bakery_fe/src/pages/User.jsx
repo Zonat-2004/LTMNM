@@ -4,7 +4,7 @@ import axios from 'axios';
 const User = () => {
   const [users, setUsers] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
-  const [updatedUser, setUpdatedUser] = useState({ name: '', email: '', phone: '', password: '' });
+  const [updatedUser, setUpdatedUser] = useState({ name: '', email: '', phone: '', password: '', is_staff: false });
   const [newUser, setNewUser] = useState({ name: '', email: '', phone: '', password: '' });
   const [isAdding, setIsAdding] = useState(false);
 
@@ -27,7 +27,7 @@ const User = () => {
       .then((res) => {
         setUsers(users.map((usr) => (usr._id === editingUser._id ? res.data : usr)));
         setEditingUser(null);
-        setUpdatedUser({ name: '', email: '', phone: '', password: '' });
+        setUpdatedUser({ name: '', email: '', phone: '', password: '', is_staff: false });
       })
       .catch((err) => console.error('Lỗi khi sửa người dùng:', err));
   };
@@ -55,6 +55,16 @@ const User = () => {
       .catch((err) => console.error('Lỗi khi thêm người dùng:', err));
   };
 
+  const handleToggleStaff = (userId, newStatus) => {
+    axios.patch(`http://localhost:8000/api/users/${userId}/set-staff/`, { is_staff: newStatus })
+      .then(() => {
+        setUsers(users.map((user) =>
+          user._id === userId ? { ...user, is_staff: newStatus } : user
+        ));
+      })
+      .catch((err) => console.error('Lỗi khi cập nhật quyền admin:', err));
+  };
+
   return (
     <div className="container py-5">
       <h2 className="text-center text-danger mb-4">👤 Danh sách người dùng</h2>
@@ -74,6 +84,7 @@ const User = () => {
               <th>Email</th>
               <th>Điện thoại</th>
               <th>Mật khẩu</th>
+              <th>Admin</th>
               <th>Hành động</th>
             </tr>
           </thead>
@@ -87,6 +98,13 @@ const User = () => {
                   <td>{user.phone}</td>
                   <td>{user.password}</td>
                   <td>
+                    <input
+                      type="checkbox"
+                      checked={user.is_staff || false}
+                      onChange={(e) => handleToggleStaff(user._id, e.target.checked)}
+                    />
+                  </td>
+                  <td>
                     <button className="btn btn-warning btn-sm" onClick={() => handleEditUser(user._id)}>✏️ Sửa</button>
                     <button className="btn btn-danger btn-sm ms-2" onClick={() => handleDeleteUser(user._id)}>🗑️ Xóa</button>
                   </td>
@@ -94,7 +112,7 @@ const User = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="6" className="text-center">Không có người dùng nào</td>
+                <td colSpan="7" className="text-center">Không có người dùng nào</td>
               </tr>
             )}
           </tbody>
@@ -117,7 +135,24 @@ const User = () => {
                 />
               </div>
             ))}
+
+            <div className="col-md-6">
+              <label className="form-label">Quyền Admin</label>
+              <div className="form-check">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  id="isStaffCheckbox"
+                  checked={updatedUser.is_staff || false}
+                  onChange={(e) => setUpdatedUser({ ...updatedUser, is_staff: e.target.checked })}
+                />
+                <label className="form-check-label" htmlFor="isStaffCheckbox">
+                  Là Admin
+                </label>
+              </div>
+            </div>
           </div>
+
           <div className="mt-4 text-end">
             <button className="btn btn-primary me-2" onClick={handleUpdateUser}>✅ Cập nhật</button>
             <button className="btn btn-secondary" onClick={() => setEditingUser(null)}>❌ Hủy</button>
@@ -125,30 +160,45 @@ const User = () => {
         </div>
       )}
 
-      {/* Form thêm người dùng */}
-      {isAdding && (
-        <div className="card mt-5 shadow-sm p-4">
-          <h4 className="mb-4 text-success text-center">➕ Thêm người dùng mới</h4>
-          <div className="row g-3">
-            {['name', 'email', 'phone', 'password'].map((field) => (
-              <div className="col-md-6" key={field}>
-                <label className="form-label">{field === 'phone' ? 'Số điện thoại' : field.charAt(0).toUpperCase() + field.slice(1)}</label>
-                <input
-                  type={field === 'password' ? 'password' : 'text'}
-                  className="form-control"
-                  value={newUser[field]}
-                  onChange={(e) => setNewUser({ ...newUser, [field]: e.target.value })}
-                />
-              </div>
-            ))}
-          </div>
-          <div className="mt-4 text-end">
-            <button className="btn btn-success me-2" onClick={handleAddUser}>✅ Thêm mới</button>
-            <button className="btn btn-secondary" onClick={() => setIsAdding(false)}>❌ Hủy</button>
-          </div>
+  {/* Form thêm người dùng */}
+{isAdding && (
+  <div className="card mt-5 shadow-sm p-4">
+    <h4 className="mb-4 text-success text-center">➕ Thêm người dùng mới</h4>
+    <div className="row g-3">
+      {['name', 'email', 'phone', 'password'].map((field) => (
+        <div className="col-md-6" key={field}>
+          <label className="form-label">{field === 'phone' ? 'Số điện thoại' : field.charAt(0).toUpperCase() + field.slice(1)}</label>
+          <input
+            type={field === 'password' ? 'password' : 'text'}
+            className="form-control"
+            value={newUser[field]}
+            onChange={(e) => setNewUser({ ...newUser, [field]: e.target.value })}
+          />
         </div>
-      )}
+      ))}
 
+      {/* Checkbox để chọn quyền Admin */}
+      <div className="col-md-6">
+        <label className="form-label">Quyền Admin</label>
+        <div className="form-check">
+          <input
+            type="checkbox"
+            className="form-check-input"
+            checked={newUser.is_staff || false}
+            onChange={(e) => setNewUser({ ...newUser, is_staff: e.target.checked })}
+          />
+          <label className="form-check-label">
+            Là Admin
+          </label>
+        </div>
+      </div>
+    </div>
+    <div className="mt-4 text-end">
+      <button className="btn btn-success me-2" onClick={handleAddUser}>✅ Thêm mới</button>
+      <button className="btn btn-secondary" onClick={() => setIsAdding(false)}>❌ Hủy</button>
+    </div>
+  </div>
+)}
       <style jsx>{`
         .table th, .table td {
           text-align: center;

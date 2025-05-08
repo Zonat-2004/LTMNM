@@ -56,25 +56,6 @@ class CakeListView(APIView):
         kwargs['partial'] = True  # ← cho phép cập nhật 1 phần
         return super().update(request, *args, **kwargs)
 
-# class CakeCreateView(APIView):
-#     parser_classes = [MultiPartParser, FormParser]
-
-#     def post(self, request, *args, **kwargs):
-#         serializer = CakeSerializer(data=request.data)
-#         if serializer.is_valid():
-#             validated_data = serializer.validated_data
-#             image = validated_data.pop('image', None)
-#             if image:
-#                 saved_path = default_storage.save(f'cakes/{image.name}', ContentFile(image.read()))
-#                 validated_data['image'] = saved_path
-#             validated_data['category_id'] = validated_data.pop('category')
-#             result = db.cakes.insert_one(validated_data)
-#             validated_data['_id'] = str(result.inserted_id)
-#             validated_data['category_id'] = str(validated_data['category_id'])
-#             return Response(CakeSerializer(validated_data).data, status=status.HTTP_201_CREATED)
-#         print("Serializer errors:", serializer.errors)  # Log lỗi chi tiết
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 class CakeDetailView(APIView):
     parser_classes = [MultiPartParser, FormParser]
     

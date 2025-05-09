@@ -2,7 +2,6 @@ from django.urls import path
 from .views.views_update import update_user_staff_status  # đã import sẵn trong __init__.py
 from .views.views_auth import LoginAPIView  # đã import sẵn trong __init__.py
 from .views.cake_views import CakeListView, CakeDetailView  # đã import sẵn trong __init__.py
-from .views.order_views import OrderListCreateView
 from .views.cart_views import AddToCartAPIView, AllCartsAPIView  # đã import sẵn trong __init__.py
 from .views.cart_views import CartAPIView  # đã import sẵn trong __init__.py
 from .views import (  # đã import sẵn trong __init__.py
@@ -11,6 +10,7 @@ from .views import (  # đã import sẵn trong __init__.py
     UserListView, UserDetailView,LoginView,
     home
 )
+from .views.order_views import OrderListView, OrderCreateView
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -30,7 +30,8 @@ urlpatterns = [
     path('api/login/', LoginView.as_view()),  # <- Đường dẫn đăng nhập mới
     # path('api/payments/', PaymentListView.as_view(), name='payment-list'),
     # path('api/payments/<str:pk>/', PaymentDetailView.as_view(), name='payment-detail'),
-    path('api/orders/', OrderListCreateView.as_view(), name='order-list-create'),
+    path('api/orders/', OrderListView.as_view(), name='get_orders'),  # API để lấy danh sách đơn hàng
+    path('api/order/create/', OrderCreateView.as_view(), name='create_order'),  # API tạo đơn hàng mới
     path('cart/', CartAPIView.as_view(), name='cart-list'),
     path('cart/add/', AddToCartAPIView.as_view(), name='add-to-cart'),
     path('api/token/', LoginAPIView.as_view(), name='login'),

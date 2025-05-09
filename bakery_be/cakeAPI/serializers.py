@@ -67,18 +67,18 @@ class PaymentSerializer(serializers.Serializer):
     method = serializers.CharField()
     status = serializers.CharField()
     created_at = serializers.DateTimeField()
-class OrderItemSerializer(serializers.Serializer):
-    cake_id = serializers.CharField()
-    name = serializers.CharField()
-    quantity = serializers.IntegerField()
-    price = serializers.IntegerField()
 class OrderSerializer(serializers.Serializer):
-    id = serializers.CharField(source='_id', read_only=True)
+    _id = serializers.CharField(read_only=True)
     user_id = serializers.CharField()
-    total_price = serializers.IntegerField()
-    status = serializers.CharField()
     created_at = serializers.DateTimeField()
-    items = OrderItemSerializer(many=True)
+    items = serializers.ListField(child=serializers.DictField())
+    total_order_price = serializers.IntegerField()
+    order_status = serializers.CharField()
+    payment_method = serializers.CharField()
+    shipping_address = serializers.DictField()
+    def create(self, validated_data):
+        # Trả về dữ liệu để lưu vào MongoDB
+        return validated_data
 class CakeInCartSerializer(serializers.Serializer):
     _id = ObjectIdField()
     name = serializers.CharField()

@@ -1,22 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import qrImage from '../assets/qr.jpg';
 
 const OrderForm = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const hasAlertedRef = useRef(false); // 🔒 Đảm bảo chỉ cảnh báo 1 lần
+  const hasAlertedRef = useRef(false);
 
   const [cartItems, setCartItems] = useState([]);
   const [userInfo, setUserInfo] = useState({
     name: '',
     email: '',
-    address: ''
+    address: '',
+    phone: ''
   });
+  const [userId, setUserId] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('cod');
   const [message, setMessage] = useState('');
 
-  // ✅ Kiểm tra đăng nhập
+  // Kiểm tra người dùng đã đăng nhập chưa
   useEffect(() => {
     const user = localStorage.getItem('user');
     if (!user) {
@@ -30,60 +33,104 @@ const OrderForm = () => {
       setUserInfo({
         name: parsedUser.name || '',
         email: parsedUser.email || '',
-        address: ''
+        address: '',
+        phone: ''
       });
+      setUserId(parsedUser._id || '');
     }
   }, [navigate]);
 
-  // ✅ Load sản phẩm từ location
+  // Kiểm tra dữ liệu giỏ hàng từ location.state
   useEffect(() => {
+    console.log("Location state:", location.state);  // Log để kiểm tra location.state
     const cake = location.state?.cake;
     const cart = location.state?.cart;
 
-    if (cake) {
-      setCartItems([{ ...cake, quantity: 1 }]);
-    } else if (cart?.length > 0) {
+    // Kiểm tra nếu giỏ hàng có dữ liệu
+    if (cart && cart.length > 0) {
       setCartItems(cart);
+    } else if (cake) {
+      setCartItems([{ ...cake, quantity: 1 }]);
     } else {
-      navigate('/');
+      const savedCart = JSON.parse(localStorage.getItem('cart')) || [];  // Kiểm tra trong localStorage
+      if (savedCart.length > 0) {
+        setCartItems(savedCart);
+      } else {
+        setMessage('🛑 Không có sản phẩm trong giỏ hàng');
+        navigate('/');
+      }
     }
   }, [location.state, navigate]);
 
+  // Xử lý thay đổi thông tin người dùng
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUserInfo(prev => ({ ...prev, [name]: value }));
   };
 
+  // Xử lý thay đổi số lượng trong giỏ hàng
   const handleQuantityChange = (index, value) => {
     const updated = [...cartItems];
     updated[index].quantity = value;
     setCartItems(updated);
   };
 
+  // Xử lý xóa sản phẩm trong giỏ hàng
   const handleRemoveItem = (id) => {
     const updated = cartItems.filter(item => item._id !== id);
     setCartItems(updated);
   };
 
-  const handleSubmit = (e) => {
+  // Xử lý khi gửi đơn hàng
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const { name, email, address } = userInfo;
-    if (!name || !email || !address) {
+    const { name, email, address, phone } = userInfo;
+    if (!name || !email || !address || !phone) {
       setMessage('❌ Vui lòng điền đầy đủ thông tin.');
       return;
     }
 
-    // TODO: Gửi dữ liệu đơn hàng tới API backend nếu cần
-    console.log('Đơn hàng gửi:', {
-      userInfo,
-      paymentMethod,
-      cartItems
-    });
+    const orderData = {
+      user_id: userId,
+      created_at: new Date().toISOString(),
+      items: cartItems.map(item => ({
+        cake: {
+          _id: item._id,
+          name: item.name,
+          description: item.description,
+          price: item.price,
+          image: item.image
+        },
+        quantity: item.quantity,
+        total_price: item.price * item.quantity
+      })),
+      total_order_price: cartItems.reduce((total, item) => total + item.price * item.quantity, 0),
+      order_status: 'pending',
+      payment_method: paymentMethod,
+      shipping_address: {
+        address: userInfo.address,
+        phone: userInfo.phone,
+        recipient_name: userInfo.name
+      }
+    };
 
-    setMessage(`🎉 Đặt hàng thành công! Thanh toán: ${paymentMethod === 'cod' ? 'Khi nhận hàng' : 'Mã QR'}`);
+    try {
+      const response = await axios.post('http://localhost:8000/api/order/create/', orderData);
+      console.log('Order response:', response.data);  // Log phản hồi từ API
+
+      if (response.data?.order_id) {
+        setMessage(`🎉 Đặt hàng thành công! Mã đơn: ${response.data.order_id}`);
+      } else {
+        setMessage('❌ Lỗi khi tạo đơn hàng.');  // Lỗi khi không có order_id trả về
+      }
+    } catch (error) {
+      console.error('Lỗi gửi đơn hàng:', error);
+      setMessage('❌ Đặt hàng thất bại.');
+    }
   };
 
+  // Tính tổng tiền trong giỏ hàng
   const getTotalPrice = () => {
     return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
   };
@@ -96,7 +143,6 @@ const OrderForm = () => {
         <div className="alert alert-danger text-center">🛑 Không có sản phẩm trong giỏ hàng.</div>
       ) : (
         <div className="row">
-          {/* Danh sách sản phẩm */}
           <div className="col-md-8">
             <table className="table table-bordered table-striped">
               <thead className="table-dark">
@@ -143,7 +189,6 @@ const OrderForm = () => {
             </table>
           </div>
 
-          {/* Thông tin đặt hàng */}
           <div className="col-md-4">
             <form onSubmit={handleSubmit} className="p-4 border rounded bg-light shadow-sm">
               <div className="mb-3">
@@ -157,6 +202,10 @@ const OrderForm = () => {
               <div className="mb-3">
                 <label className="form-label">Địa chỉ</label>
                 <input type="text" name="address" value={userInfo.address} onChange={handleChange} required className="form-control" />
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Số điện thoại</label>
+                <input type="text" name="phone" value={userInfo.phone} onChange={handleChange} required className="form-control" />
               </div>
               <div className="mb-3">
                 <label className="form-label">Phương thức thanh toán</label>

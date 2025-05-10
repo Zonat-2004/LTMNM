@@ -27,6 +27,7 @@ function Header() {
         <Link to="/">Trang chủ</Link>
         <Link to="/cakes">Sản phẩm</Link>
         <Link to="/cart">Giỏ hàng</Link>
+        <Link to="/orders">Đơn Hàng</Link>
 
         {user ? (
           <>

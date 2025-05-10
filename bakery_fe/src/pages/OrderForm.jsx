@@ -18,8 +18,8 @@ const OrderForm = () => {
   const [userId, setUserId] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('cod');
   const [message, setMessage] = useState('');
+  const [orderId, setOrderId] = useState('');
 
-  // Kiểm tra người dùng đã đăng nhập chưa
   useEffect(() => {
     const user = localStorage.getItem('user');
     if (!user) {
@@ -40,19 +40,16 @@ const OrderForm = () => {
     }
   }, [navigate]);
 
-  // Kiểm tra dữ liệu giỏ hàng từ location.state
   useEffect(() => {
-    console.log("Location state:", location.state);  // Log để kiểm tra location.state
     const cake = location.state?.cake;
     const cart = location.state?.cart;
 
-    // Kiểm tra nếu giỏ hàng có dữ liệu
     if (cart && cart.length > 0) {
       setCartItems(cart);
     } else if (cake) {
       setCartItems([{ ...cake, quantity: 1 }]);
     } else {
-      const savedCart = JSON.parse(localStorage.getItem('cart')) || [];  // Kiểm tra trong localStorage
+      const savedCart = JSON.parse(localStorage.getItem('cart')) || [];
       if (savedCart.length > 0) {
         setCartItems(savedCart);
       } else {
@@ -62,26 +59,22 @@ const OrderForm = () => {
     }
   }, [location.state, navigate]);
 
-  // Xử lý thay đổi thông tin người dùng
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUserInfo(prev => ({ ...prev, [name]: value }));
   };
 
-  // Xử lý thay đổi số lượng trong giỏ hàng
   const handleQuantityChange = (index, value) => {
     const updated = [...cartItems];
     updated[index].quantity = value;
     setCartItems(updated);
   };
 
-  // Xử lý xóa sản phẩm trong giỏ hàng
   const handleRemoveItem = (id) => {
     const updated = cartItems.filter(item => item._id !== id);
     setCartItems(updated);
   };
 
-  // Xử lý khi gửi đơn hàng
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -117,12 +110,13 @@ const OrderForm = () => {
 
     try {
       const response = await axios.post('http://localhost:8000/api/order/create/', orderData);
-      console.log('Order response:', response.data);  // Log phản hồi từ API
+      console.log('Order response:', response.data);
 
       if (response.data?.order_id) {
-        setMessage(`🎉 Đặt hàng thành công! Mã đơn: ${response.data.order_id}`);
+        setOrderId(response.data.order_id);
+        setMessage('🎉 Đặt hàng thành công!');
       } else {
-        setMessage('❌ Lỗi khi tạo đơn hàng.');  // Lỗi khi không có order_id trả về
+        setMessage('❌ Lỗi khi tạo đơn hàng.');
       }
     } catch (error) {
       console.error('Lỗi gửi đơn hàng:', error);
@@ -130,7 +124,6 @@ const OrderForm = () => {
     }
   };
 
-  // Tính tổng tiền trong giỏ hàng
   const getTotalPrice = () => {
     return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
   };
@@ -228,7 +221,16 @@ const OrderForm = () => {
 
               {message && (
                 <div className="alert alert-success text-center mt-3">
-                  {message}
+                  <p className="mb-2">{message}</p>
+                  {orderId && (
+                    <button
+                      type="button"
+                      className="btn btn-outline-success"
+                      onClick={() => navigate(`/orders/${orderId}`)}
+                    >
+                      📄 Xem đơn hàng
+                    </button>
+                  )}
                 </div>
               )}
             </form>

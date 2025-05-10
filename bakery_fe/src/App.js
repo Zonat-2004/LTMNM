@@ -19,6 +19,7 @@ import Cart from './pages/Cart';
 import AdminCartPage from './pages/AdminCartPage';
 import ProtectedRoute from './pages/ProtectedRoute';
 import OrderDetail from './pages/OrderDetail';
+import OrderList from './pages/OrderList';
 
 function App() {
   return (
@@ -31,7 +32,8 @@ function App() {
         <Route path="/cart" element={<MainLayout><Cart /></MainLayout>} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/orderdetail" element={<MainLayout><OrderDetail /></MainLayout>} />"
+        <Route path="/orders/:orderId" element={<MainLayout><OrderDetail /></MainLayout>} />
+        <Route path="/orders" element={<MainLayout><OrderList /></MainLayout>} />
 
         {/* Các route admin cần bảo vệ */}
         <Route 

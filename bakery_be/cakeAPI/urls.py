@@ -10,7 +10,7 @@ from .views import (  # đã import sẵn trong __init__.py
     UserListView, UserDetailView,LoginView,
     home
 )
-from .views.order_views import OrderListView, OrderCreateView
+from .views.order_views import OrderListView, OrderCreateView, OrderDetailView  # đã import sẵn trong __init__.py
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -32,6 +32,7 @@ urlpatterns = [
     # path('api/payments/<str:pk>/', PaymentDetailView.as_view(), name='payment-detail'),
     path('api/orders/', OrderListView.as_view(), name='get_orders'),  # API để lấy danh sách đơn hàng
     path('api/order/create/', OrderCreateView.as_view(), name='create_order'),  # API tạo đơn hàng mới
+    path('api/order/<str:order_id>/', OrderDetailView.as_view()),
     path('cart/', CartAPIView.as_view(), name='cart-list'),
     path('cart/add/', AddToCartAPIView.as_view(), name='add-to-cart'),
     path('api/token/', LoginAPIView.as_view(), name='login'),

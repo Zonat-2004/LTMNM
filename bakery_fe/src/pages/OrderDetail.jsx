@@ -1,76 +1,136 @@
 import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
 
 const OrderDetail = () => {
   const { orderId } = useParams();
+  const navigate = useNavigate();
   const [order, setOrder] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    const fetchOrderDetails = async () => {
+    const fetchOrder = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/order/${orderId}`);
-        setOrder(response.data);
-        setLoading(false);
-      } catch (error) {
-        console.error('Lỗi lấy thông tin đơn hàng:', error);
-        setLoading(false);
+        const res = await axios.get(`http://localhost:8000/api/order/${orderId}/`);
+        setOrder(res.data);
+      } catch (err) {
+        console.error('Lỗi khi lấy đơn hàng:', err);
+        setError('Không tìm thấy đơn hàng.');
       }
     };
 
-    fetchOrderDetails();
+    fetchOrder();
   }, [orderId]);
 
-  // Hàm kiểm tra giá trị trước khi gọi toLocaleString
-  const formatCurrency = (value) => {
-    return value && !isNaN(value) ? value.toLocaleString() : '0';
+  const formatDateToVietnam = (isoDate) => {
+    const date = new Date(isoDate);
+    const optionsDate = { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'Asia/Ho_Chi_Minh' };
+    const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'Asia/Ho_Chi_Minh' };
+    return {
+      date: date.toLocaleDateString('vi-VN', optionsDate),
+      time: date.toLocaleTimeString('vi-VN', optionsTime),
+    };
   };
 
-  if (loading) return <div>Đang tải...</div>;
+  const getOrderStatusText = (status) => {
+    switch (status) {
+      case 'pending':
+        return 'Đang xử lý';
+      case 'shipped':
+        return 'Đã giao hàng';
+      case 'delivered':
+        return 'Đã nhận hàng';
+      case 'cancelled':
+        return 'Đã hủy';
+      default:
+        return status;
+    }
+  };
 
-  if (!order) return <div>Không tìm thấy đơn hàng này.</div>;
+  const handleCancelOrder = () => {
+    // Thực hiện API hủy đơn ở đây nếu cần
+    alert('Đơn hàng đã được hủy');
+  };
+
+  if (error) {
+    return <div className="alert alert-danger text-center mt-4">{error}</div>;
+  }
+
+  if (!order) {
+    return <div className="text-center mt-4">Đang tải đơn hàng...</div>;
+  }
+
+  const { date, time } = formatDateToVietnam(order.created_at);
 
   return (
     <div className="container py-5">
-      <h2 className="text-center text-primary mb-4">Chi tiết đơn hàng #{order.order_id}</h2>
-      <div className="row">
-        <div className="col-md-8">
-          <table className="table table-bordered table-striped">
-            <thead className="table-dark">
-              <tr>
-                <th>Hình ảnh</th>
-                <th>Tên bánh</th>
-                <th>Giá</th>
-                <th>Số lượng</th>
-                <th>Tổng</th>
-              </tr>
-            </thead>
-            <tbody>
-              {order.items.map((item) => (
-                <tr key={item.cake._id}>
-                  <td>
-                    <img src={`http://localhost:8000${item.cake.image}`} alt={item.cake.name} style={{ maxWidth: '50px' }} />
-                  </td>
-                  <td>{item.cake.name}</td>
-                  <td>{formatCurrency(item.cake.price)} VND</td>
-                  <td>{item.quantity}</td>
-                  <td>{formatCurrency(item.cake.price * item.quantity)} VND</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <button className="btn btn-outline-primary mb-3" onClick={() => navigate('/orders')}>
+        ⬅️ Quay lại danh sách đơn hàng
+      </button>
 
-        <div className="col-md-4">
-          <h4>Thông tin đơn hàng</h4>
-          <p><strong>Ngày đặt:</strong> {new Date(order.created_at).toLocaleString()}</p>
-          <p><strong>Tổng tiền:</strong> {formatCurrency(order.total_order_price)} VND</p>
-          <p><strong>Trạng thái:</strong> {order.order_status}</p>
-          <p><strong>Phương thức thanh toán:</strong> {order.payment_method}</p>
-          <p><strong>Địa chỉ giao hàng:</strong> {order.shipping_address.address}</p>
-          <p><strong>Số điện thoại:</strong> {order.shipping_address.phone}</p>
+      <h2 className="text-center text-primary mb-4">📦 Chi tiết đơn hàng</h2>
+
+      <div className="card shadow p-4">
+        <h5>🆔 Mã đơn: {order._id}</h5>
+        <p>👤 Người nhận: {order.shipping_address.recipient_name}</p>
+        <p>📍 Địa chỉ: {order.shipping_address.address}</p>
+        <p>📞 SĐT: {order.shipping_address.phone}</p>
+        <p>💳 Thanh toán: {order.payment_method === 'cod' ? 'Thanh toán khi nhận hàng' : 'QR Code'}</p>
+        <p>📅 Ngày đặt:</p>
+        <ul>
+          <li>Ngày: {date}</li>
+          <li>Giờ: {time}</li>
+        </ul>
+        <p>🚚 Trạng thái: <strong>{getOrderStatusText(order.order_status)}</strong></p>
+
+        <h5 className="mt-4">🧁 Danh sách sản phẩm:</h5>
+        <table className="table table-bordered table-striped">
+          <thead className="table-secondary">
+            <tr>
+              <th>Hình ảnh</th>
+              <th>Tên bánh</th>
+              <th>Giá</th>
+              <th>Số lượng</th>
+              <th>Tổng</th>
+            </tr>
+          </thead>
+          <tbody>
+            {order.items.map((item, index) => (
+              <tr key={index}>
+                <td>
+                  <img
+                    src={item.cake.image_url}
+                    alt={item.cake.name}
+                    style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+                  />
+                </td>
+                <td>{item.cake.name}</td>
+                <td>{item.cake.price.toLocaleString()} VND</td>
+                <td>{item.quantity}</td>
+                <td>{(item.quantity * item.cake.price).toLocaleString()} VND</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <h4 className="text-end text-success mt-3">
+          🧾 Tổng tiền: {order.total_order_price.toLocaleString()} VND
+        </h4>
+      </div>
+
+      {/* Thêm nút hủy đơn ở dưới */}
+      {order.order_status === 'pending' && (
+        <div className="text-center mt-4">
+          <button className="btn btn-danger" onClick={handleCancelOrder}>
+            Hủy đơn
+          </button>
         </div>
+      )}
+
+      <div className="text-center mt-4">
+        <button className="btn btn-outline-primary" onClick={() => navigate('/orders')}>
+          ⬅️ Quay lại danh sách đơn hàng
+        </button>
       </div>
     </div>
   );

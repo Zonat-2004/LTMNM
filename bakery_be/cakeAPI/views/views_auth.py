@@ -16,29 +16,32 @@ SECRET_KEY = settings.SECRET_KEY  # Lấy secret key từ settings
 
 class LoginAPIView(APIView):
     def post(self, request):
-        email = request.data.get("email")
+        phone = request.data.get("phone")
         password = request.data.get("password")
 
-        user = db_users.find_one({"email": email})
+        # Tìm người dùng theo số điện thoại
+        user = db_users.find_one({"phone": phone})
         if not user or user["password"] != password:
             return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
 
         # Tạo payload cho JWT
         payload = {
             "user_id": str(user["_id"]),
-            "email": user["email"],
+            "phone": user["phone"],
             "is_staff": user.get("is_staff", False),
-            "exp": datetime.utcnow() + timedelta(hours=1),
+            "exp": datetime.utcnow() + timedelta(hours=1),  # Token sẽ hết hạn sau 1 giờ
             "iat": datetime.utcnow(),
         }
 
         # Mã hóa JWT
         token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
 
+        # Đảm bảo token được trả về trong response
         return Response({
-            "access": token,
+            "message": "Đăng nhập thành công",
+            "access": token,  # Thêm token vào response
             "user": {
-                "email": user["email"],
+                "phone": user["phone"],
                 "name": user["name"],
                 "is_staff": user.get("is_staff", False),
                 "_id": str(user["_id"])

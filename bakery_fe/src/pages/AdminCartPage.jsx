@@ -1,84 +1,89 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-function AdminCartPage() {
-  const [carts, setCarts] = useState([]);
-  const [loading, setLoading] = useState(true);
+const AdminCartPage = () => {
+    const [orders, setOrders] = useState([]);
 
-  useEffect(() => {
-    axios.get('http://localhost:8000/api/carts/')
-      .then(res => {
-        if (Array.isArray(res.data)) {
-          setCarts(res.data);
-        } else {
-          setCarts([]);
-        }
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error("Lỗi khi tải đơn hàng:", err);
-        setLoading(false);
-      });
-  }, []);
+    useEffect(() => {
+        axios.get('http://localhost:8000/api/orders/')
+            .then(response => {
+                console.log('Dữ liệu đơn hàng:', response.data);
+                setOrders(response.data);
+            })
+            .catch(error => {
+                console.error('Lỗi khi tải đơn hàng:', error);
+            });
+    }, []);
 
-  return (
-    <div style={{ padding: "2rem" }}>
-      <h2 style={{ textAlign: "center", marginBottom: "2rem" }}>📦 Danh sách đơn hàng</h2>
+    return (
+        <div className="container mt-5">
+            <h1 className="text-center mb-4">📦 Danh sách đơn hàng</h1>
 
-      {loading ? (
-        <p style={{ textAlign: "center" }}>Đang tải dữ liệu...</p>
-      ) : carts.length === 0 ? (
-        <p style={{ textAlign: "center", fontStyle: "italic" }}>Không có đơn hàng nào.</p>
-      ) : (
-        carts.map((cart, index) => (
-          <div
-            key={index}
-            style={{
-              border: "1px solid #ddd",
-              borderRadius: "10px",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-              padding: "1.5rem",
-              marginBottom: "1.5rem",
-              backgroundColor: "#fefefe"
-            }}
-          >
-            <p><strong>👤 Người dùng:</strong> {cart.user_id}</p>
-            <p><strong>📅 Ngày tạo:</strong> {new Date(cart.created_at).toLocaleString('vi-VN', {
-  timeZone: 'Asia/Ho_Chi_Minh'
-})}</p>
-            <p><strong>💰 Tổng tiền:</strong> {cart.total_cart_price?.toLocaleString()} VND</p>
-            <p><strong>🛒 Số lượng sản phẩm:</strong> {cart.items_count}</p>
+            {orders.length === 0 ? (
+                <div className="alert alert-danger text-center">
+                    Không có đơn hàng nào.
+                </div>
+            ) : (
+                orders.map((order, index) => (
+                    <div key={index} className="card mb-4">
+                        <div className="card-header bg-info text-white">
+                            <h5>🧾 Đơn hàng #{index + 1}</h5>
+                        </div>
+                        <div className="card-body">
+                            <p><strong>👤 Người nhận:</strong> {order.shipping_address.recipient_name}</p>
+                            <p><strong>📞 SĐT:</strong> {order.shipping_address.phone}</p>
+                            <p><strong>📍 Địa chỉ:</strong> {order.shipping_address.address}</p>
+                            <p><strong>💳 Thanh toán:</strong> {order.payment_method === 'cod' ? 'Thanh toán khi nhận hàng' : order.payment_method}</p>
+                            <p><strong>📅 Ngày đặt:</strong> {new Date(order.created_at).toLocaleString()}</p>
 
-            <h4 style={{ marginTop: "1rem", marginBottom: "0.5rem" }}>📋 Chi tiết sản phẩm:</h4>
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
-              <thead>
-                <tr style={{ backgroundColor: "#f0f0f0" }}>
-                  <th style={{ padding: "0.5rem", border: "1px solid #ccc" }}>Tên bánh</th>
-                  <th style={{ padding: "0.5rem", border: "1px solid #ccc" }}>Số lượng</th>
-                  <th style={{ padding: "0.5rem", border: "1px solid #ccc" }}>Thành tiền</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Array.isArray(cart.items) ? (
-                  cart.items.map((item, i) => (
-                    <tr key={i}>
-                      <td style={{ padding: "0.5rem", border: "1px solid #ccc" }}>{item.cake_name || "Không rõ"}</td>
-                      <td style={{ padding: "0.5rem", border: "1px solid #ccc" }}>{item.quantity}</td>
-                      <td style={{ padding: "0.5rem", border: "1px solid #ccc" }}>{item.total_price?.toLocaleString()} VND</td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="3" style={{ padding: "0.5rem", textAlign: "center" }}>Không có sản phẩm</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        ))
-      )}
-    </div>
-  );
-}
+                            <table className="table table-bordered text-center mt-3">
+                                <thead className="table-warning">
+                                    <tr>
+                                        <th>Tên bánh</th>
+                                        <th>Ảnh</th>
+                                        <th>Giá</th>
+                                        <th>Số lượng</th>
+                                        <th>Thành tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {order.items.map((item, i) => (
+                                        <tr key={i}>
+                                            <td>{item.cake.name}</td>
+                                            <td>
+                                                <img
+                                                    src={`http://localhost:8000${item.cake.image}`}
+                                                    alt={item.cake.name}
+                                                    style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px' }}
+                                                />
+                                            </td>
+                                            <td>{item.cake.price.toLocaleString()} VND</td>
+                                            <td>{item.quantity}</td>
+                                            <td>{item.total_price.toLocaleString()} VND</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+
+                            <div className="text-end">
+                                <strong>Tổng tiền đơn hàng: </strong>
+                                <span className="text-danger fw-bold">
+                                    {order.total_order_price.toLocaleString()} VND
+                                </span>
+                            </div>
+
+                            <p className="mt-2">
+                                <strong>🚚 Trạng thái:</strong> 
+                                <span className={`ms-2 badge bg-${order.order_status === 'pending' ? 'secondary' : 'success'}`}>
+                                    {order.order_status === 'pending' ? 'Đang xử lý' : order.order_status}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                ))
+            )}
+        </div>
+    );
+};
 
 export default AdminCartPage;

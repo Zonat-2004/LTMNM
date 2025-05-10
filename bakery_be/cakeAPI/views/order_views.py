@@ -31,6 +31,25 @@ class OrderListView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+    # ✅ Thêm hỗ trợ PATCH để huỷ đơn hàng
+    def patch(self, request, order_id):
+        try:
+            data = request.data
+            if 'order_status' not in data:
+                return Response({'error': 'Thiếu trường order_status'}, status=status.HTTP_400_BAD_REQUEST)
+
+            update_result = orders_collection.update_one(
+                {'_id': ObjectId(order_id)},
+                {'$set': {'order_status': data['order_status']}}
+            )
+
+            if update_result.modified_count == 1:
+                return Response({'message': 'Cập nhật trạng thái đơn hàng thành công'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'error': 'Không thể cập nhật đơn hàng'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 # API tạo đơn hàng mới
 class OrderCreateView(APIView):

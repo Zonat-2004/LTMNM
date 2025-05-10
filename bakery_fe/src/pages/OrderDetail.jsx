@@ -47,9 +47,20 @@ const OrderDetail = () => {
     }
   };
 
-  const handleCancelOrder = () => {
-    // Thực hiện API hủy đơn ở đây nếu cần
-    alert('Đơn hàng đã được hủy');
+  const handleCancelOrder = async () => {
+    if (window.confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?')) {
+      try {
+        await axios.patch(`http://localhost:8000/api/order/${order._id}/`, {
+          order_status: 'cancelled',
+        });
+        alert('Đơn hàng đã được hủy');
+        // Cập nhật lại trạng thái hiển thị
+        setOrder(prev => ({ ...prev, order_status: 'cancelled' }));
+      } catch (error) {
+        console.error('Lỗi khi hủy đơn hàng:', error);
+        alert('Không thể hủy đơn hàng. Vui lòng thử lại sau.');
+      }
+    }
   };
 
   if (error) {
@@ -99,7 +110,7 @@ const OrderDetail = () => {
               <tr key={index}>
                 <td>
                   <img
-                    src={item.cake.image_url}
+                    src={`http://localhost:8000${item.cake.image}`}
                     alt={item.cake.name}
                     style={{ width: '50px', height: '50px', objectFit: 'cover' }}
                   />

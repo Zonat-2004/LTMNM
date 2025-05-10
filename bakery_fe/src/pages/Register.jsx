@@ -10,10 +10,12 @@ const Register = () => {
     password: '',
     confirmPassword: '',
   });
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setError(''); // Xoá lỗi khi người dùng chỉnh sửa
   };
 
   const handleSubmit = async (e) => {
@@ -21,12 +23,12 @@ const Register = () => {
     const { name, phone, email, password, confirmPassword } = formData;
 
     if (password !== confirmPassword) {
-      alert('Mật khẩu xác nhận không khớp!');
+      setError('Mật khẩu xác nhận không khớp!');
       return;
     }
 
     try {
-      await axios.post('http://localhost:8000/api/users/', {
+      await axios.post('http://localhost:8000/api/registers/', {
         name,
         phone,
         email,
@@ -35,7 +37,8 @@ const Register = () => {
       alert('Đăng ký thành công!');
       navigate('/login');
     } catch (error) {
-      alert('Đăng ký thất bại: ' + (error.response?.data?.error || error.message));
+      const errorMsg = error.response?.data?.error || error.response?.data?.message || 'Lỗi đăng ký. Vui lòng thử lại.';
+      setError(errorMsg);
     }
   };
 
@@ -46,9 +49,18 @@ const Register = () => {
         <form onSubmit={handleSubmit}>
           <InputField label="Họ và Tên" name="name" value={formData.name} onChange={handleChange} icon="fas fa-user" />
           <InputField label="Số điện thoại" name="phone" value={formData.phone} onChange={handleChange} icon="fas fa-phone" />
+          {error.toLowerCase().includes('số điện thoại') && (
+            <div style={styles.errorText}>{error}</div>
+          )}
           <InputField label="Email" name="email" type="email" value={formData.email} onChange={handleChange} icon="fas fa-envelope" />
+          {error.toLowerCase().includes('email') && (
+            <div style={styles.errorText}>{error}</div>
+          )}
           <InputField label="Mật khẩu" name="password" type="password" value={formData.password} onChange={handleChange} icon="fas fa-lock" />
           <InputField label="Xác nhận mật khẩu" name="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleChange} icon="fas fa-key" />
+          {error && !error.toLowerCase().includes('số điện thoại') && !error.toLowerCase().includes('email') && (
+            <div style={styles.errorText}>{error}</div>
+          )}
           <button type="submit" style={styles.button}>ĐĂNG KÝ</button>
         </form>
         <p style={styles.text}>
@@ -60,7 +72,6 @@ const Register = () => {
   );
 };
 
-// Component cho mỗi ô nhập
 const InputField = ({ label, name, type = "text", value, onChange, icon }) => (
   <div style={styles.formGroup}>
     <label>{label}</label>
@@ -160,6 +171,13 @@ const styles = {
     fontWeight: 'bold',
     textDecoration: 'none',
     fontSize: '14px',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: '14px',
+    marginTop: '5px',
+    textAlign: 'left',
+    marginBottom: '10px',
   },
 };
 

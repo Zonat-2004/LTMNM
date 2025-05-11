@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Thêm icon mắt
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const LoginPage = () => {
-  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState(''); // Đổi thành email
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [showPassword, setShowPassword] = useState(false); // Quản lý hiển thị mật khẩu
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -15,15 +15,13 @@ const LoginPage = () => {
 
     try {
       const res = await axios.post('http://localhost:8000/api/login/', {
-        phone,
+        email, // Gửi email thay vì phone
         password,
       });
 
-      // Lưu thông tin người dùng và JWT token vào localStorage
-      localStorage.setItem('access', res.data.access); // JWT token
-      localStorage.setItem('user', JSON.stringify(res.data.user)); // Thông tin người dùng
+      localStorage.setItem('access', res.data.access);
+      localStorage.setItem('user', JSON.stringify(res.data.user));
 
-      // Điều hướng đến trang quản trị nếu là admin, hoặc trang chủ nếu là người dùng bình thường
       if (res.data.user.is_staff) {
         navigate('/admin');
       } else {
@@ -42,11 +40,11 @@ const LoginPage = () => {
         
         <form onSubmit={handleLogin}>
           <InputField
-            label="Số điện thoại"
-            name="phone"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            icon="fas fa-phone"
+            label="Email"
+            name="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            icon="fas fa-envelope"
           />
           <InputField
             label="Mật khẩu"
@@ -97,6 +95,7 @@ const InputField = ({ label, name, type = "text", value, onChange, icon, toggleV
 );
 
 const styles = {
+  // (giữ nguyên phần style như bạn đã làm)
   body: {
     backgroundColor: '#ff66b2',
     display: 'flex',

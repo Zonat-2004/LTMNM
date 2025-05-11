@@ -65,16 +65,38 @@ class UserDetailView(APIView):
 
 class LoginView(APIView):
     def post(self, request):
-        phone = request.data.get('phone')
+        email = request.data.get('email')
         password = request.data.get('password')
 
-        if not phone or not password:
-            return Response({'error': 'Vui lòng nhập đầy đủ số điện thoại và mật khẩu.'}, status=status.HTTP_400_BAD_REQUEST)
+        if not email or not password:
+            return Response(
+                {'error': 'Vui lòng nhập đầy đủ email và mật khẩu.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-        user = db.users.find_one({'phone': phone, 'password': password})
+        user = db.users.find_one({'email': email, 'password': password})
 
         if not user:
-            return Response({'error': 'Số điện thoại hoặc mật khẩu không đúng.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {'error': 'Email hoặc mật khẩu không đúng.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
+        # Chuyển ObjectId về string để trả JSON
         user['_id'] = str(user['_id'])
-        return Response({'message': 'Đăng nhập thành công', 'user': user}, status=status.HTTP_200_OK)
+
+        return Response(
+            {'message': 'Đăng nhập thành công', 'user': user},
+            status=status.HTTP_200_OK
+        )
+
+
+
+
+
+
+
+
+
+
+

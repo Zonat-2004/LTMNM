@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/Home.css';
 import banner1 from '../assets/banner1.png';
 import banner2 from '../assets/banner2.jpg';
-import { Link, useNavigate } from 'react-router-dom';  
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const Home = () => {
@@ -90,9 +90,9 @@ const Home = () => {
             <span className="visually-hidden">Next</span>
           </button>
 
-          <div className="banner-overlay">
-            <h1 className="display-4 fw-bold text-pink">BAKERY CAKE</h1>
-            <p className="lead text-pink">Chào mừng tới trang web</p>
+          <div className="banner-overlay text-center">
+            <h1 className="hero-title">BAKERY CAKE</h1>
+            <p className="hero-subtitle">Chào mừng tới trang web</p>
             <Link to="/cakes" className="btn btn-light btn-lg mt-3">ĐẶT BÁNH NGAY</Link>
           </div>
         </div>
@@ -136,16 +136,34 @@ const Home = () => {
       </section>
 
       <style>{`
+        .hero-title {
+          font-size: 4rem;
+          font-weight: 800;
+          color: #ffccda;
+          text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          letter-spacing: 2px;
+        }
+
+        .hero-subtitle {
+          font-size: 1.5rem;
+          font-weight: 500;
+          color: #fff3f6;
+          text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+          margin-top: 10px;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         .featured-btn-cart {
           background-color: #ffe082;
           color: #5d4037;
           border: none;
-          border-radius: 20px; /* Nhỏ hơn một chút */
-          padding: 8px; /* Giảm kích thước */
+          border-radius: 20px;
+          padding: 8px;
           font-weight: bold;
           transition: background 0.3s;
-          width: 50px; /* Giảm chiều rộng */
-          height: 50px; /* Giảm chiều cao */
+          width: 50px;
+          height: 50px;
           display: flex;
           justify-content: center;
           align-items: center;

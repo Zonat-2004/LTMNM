@@ -20,6 +20,8 @@ import AdminCartPage from './pages/AdminCartPage';
 import ProtectedRoute from './pages/ProtectedRoute';
 import OrderDetail from './pages/OrderDetail';
 import OrderList from './pages/OrderList';
+import ForgotPassword from './pages/ForgotPasswordForm';
+import ResetPassword from './pages/ResetPassword';
 
 function App() {
   return (
@@ -34,6 +36,9 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/orders/:orderId" element={<MainLayout><OrderDetail /></MainLayout>} />
         <Route path="/orders" element={<MainLayout><OrderList /></MainLayout>} />
+        <Route path="/forget" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        
 
         {/* Các route admin cần bảo vệ */}
         <Route 

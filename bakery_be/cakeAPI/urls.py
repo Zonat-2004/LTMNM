@@ -15,6 +15,7 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+from .views.Forget_Resert_views import ForgotPasswordView, ResetPasswordView, VerifyOTPView  # đã import sẵn trong __init__.py
 from .views.views_register import RegisterAPIView  # đã import sẵn trong __init__.py
 from django.conf import settings
 from django.conf.urls.static import static
@@ -40,6 +41,9 @@ urlpatterns = [
     path('api/token/', LoginAPIView.as_view(), name='login'),
     path('carts/', AllCartsAPIView.as_view(), name='all-carts'),
     path('users/<str:pk>/set-staff/', update_user_staff_status),
+    path('api/forgot-password/', ForgotPasswordView.as_view(), name='forgot-password'),
+    path('api/reset-password/', ResetPasswordView.as_view(), name='reset-password'),
+    path('api/reset-password/verify/', VerifyOTPView.as_view()),
     # Home path
     path('', home, name='home'),
 ]

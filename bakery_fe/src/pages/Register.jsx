@@ -11,6 +11,8 @@ const Register = () => {
     confirmPassword: '',
   });
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // State để hiển thị mật khẩu
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // State cho xác nhận mật khẩu
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -42,6 +44,14 @@ const Register = () => {
     }
   };
 
+  const togglePassword = () => {
+    setShowPassword(!showPassword); // Chuyển trạng thái hiển thị mật khẩu
+  };
+
+  const toggleConfirmPassword = () => {
+    setShowConfirmPassword(!showConfirmPassword); // Chuyển trạng thái hiển thị xác nhận mật khẩu
+  };
+
   return (
     <div style={styles.body}>
       <div style={styles.container}>
@@ -56,8 +66,46 @@ const Register = () => {
           {error.toLowerCase().includes('email') && (
             <div style={styles.errorText}>{error}</div>
           )}
-          <InputField label="Mật khẩu" name="password" type="password" value={formData.password} onChange={handleChange} icon="fas fa-lock" />
-          <InputField label="Xác nhận mật khẩu" name="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleChange} icon="fas fa-key" />
+          <div style={styles.formGroup}>
+            <label>Mật khẩu</label>
+            <div style={styles.inputGroup}>
+              <span style={styles.icon}><i className="fas fa-lock"></i></span>
+              <input
+                type={showPassword ? "text" : "password"} // Thay đổi type dựa trên trạng thái showPassword
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Nhập mật khẩu"
+                required
+                style={styles.input}
+              />
+              <span 
+                onClick={togglePassword} 
+                style={styles.eyeIcon}>
+                <i className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"}`}></i>
+              </span>
+            </div>
+          </div>
+          <div style={styles.formGroup}>
+            <label>Xác nhận mật khẩu</label>
+            <div style={styles.inputGroup}>
+              <span style={styles.icon}><i className="fas fa-key"></i></span>
+              <input
+                type={showConfirmPassword ? "text" : "password"} // Thay đổi type dựa trên trạng thái showConfirmPassword
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                placeholder="Xác nhận mật khẩu"
+                required
+                style={styles.input}
+              />
+              <span 
+                onClick={toggleConfirmPassword} 
+                style={styles.eyeIcon}>
+                <i className={`fas ${showConfirmPassword ? "fa-eye-slash" : "fa-eye"}`}></i>
+              </span>
+            </div>
+          </div>
           {error && !error.toLowerCase().includes('số điện thoại') && !error.toLowerCase().includes('email') && (
             <div style={styles.errorText}>{error}</div>
           )}
@@ -178,6 +226,11 @@ const styles = {
     marginTop: '5px',
     textAlign: 'left',
     marginBottom: '10px',
+  },
+  eyeIcon: {
+    cursor: 'pointer',
+    fontSize: '20px',
+    color: '#d63384',
   },
 };
 

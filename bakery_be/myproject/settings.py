@@ -148,3 +148,13 @@ REST_FRAMEWORK = {
       'rest_framework_simplejwt.authentication.JWTAuthentication',
   ],
 }
+# settings.py
+
+# Cấu hình gửi email qua Gmail
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # Dùng backend SMTP của Django
+EMAIL_HOST = 'smtp.gmail.com'  # SMTP server của Gmail
+EMAIL_PORT = 587  # Cổng sử dụng cho kết nối TLS (587 là cổng mặc định cho TLS)
+EMAIL_USE_TLS = True  # Kết nối qua TLS (mã hóa)
+EMAIL_HOST_USER = 'TinhBaoKiet000@gmail.com'  # Địa chỉ email gửi
+EMAIL_HOST_PASSWORD = 'TBK123@'  # Mật khẩu email, lưu ý là nếu bạn sử dụng Gmail thì cần phải tạo mật khẩu ứng dụng (App Password)
+

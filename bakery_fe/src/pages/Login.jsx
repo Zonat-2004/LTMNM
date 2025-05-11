@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Thêm icon mắt
 
 const LoginPage = () => {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // Quản lý hiển thị mật khẩu
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -36,113 +38,131 @@ const LoginPage = () => {
     <div style={styles.body}>
       <div style={styles.container}>
         <h2 style={styles.title}>ĐĂNG NHẬP</h2>
-
-        {errorMessage && (
-          <div style={{ color: 'red', marginBottom: '10px' }}>{errorMessage}</div>
-        )}
-
+        {errorMessage && <div style={styles.errorText}>{errorMessage}</div>}
+        
         <form onSubmit={handleLogin}>
-          <div style={styles.inputGroup}>
-            <label htmlFor="phone">Số điện thoại</label>
-            <input
-              type="text"
-              id="phone"
-              name="phone"
-              placeholder="Nhập số điện thoại"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              required
-              style={styles.input}
-            />
-          </div>
-          <div style={styles.inputGroup}>
-            <label htmlFor="password">Mật khẩu</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              placeholder="Nhập mật khẩu"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              style={styles.input}
-            />
-          </div>
-          <button type="submit" style={styles.button}>
-            ĐĂNG NHẬP
-          </button>
+          <InputField
+            label="Số điện thoại"
+            name="phone"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            icon="fas fa-phone"
+          />
+          <InputField
+            label="Mật khẩu"
+            name="password"
+            type={showPassword ? 'text' : 'password'}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            icon="fas fa-lock"
+            toggleVisibility={() => setShowPassword(!showPassword)}
+            showPassword={showPassword}
+          />
+          <button type="submit" style={styles.button}>ĐĂNG NHẬP</button>
         </form>
 
-        <div style={styles.registerLink}>
-          Bạn chưa có tài khoản?{' '}
-          <Link to="/register" style={styles.link}>
-            Đăng ký ngay
-          </Link>
-        </div>
-
-        <Link to="/forgot-password" style={styles.forgotPassword}>
-          Quên mật khẩu
-        </Link>
-        <Link to="/" style={styles.backButton}>
-          ⬅ Quay lại
-        </Link>
+        <p style={styles.text}>
+          Bạn chưa có tài khoản? <Link to="/register" style={styles.link}>Đăng ký ngay</Link>
+        </p>
+        <p style={styles.text}>
+          <Link to="/forget" style={styles.link}>Quên mật khẩu?</Link>
+        </p>
+        <Link to="/" style={styles.backButton}>⬅ Quay lại</Link>
       </div>
     </div>
   );
 };
 
+const InputField = ({ label, name, type = "text", value, onChange, icon, toggleVisibility, showPassword }) => (
+  <div style={styles.formGroup}>
+    <label>{label}</label>
+    <div style={styles.inputGroup}>
+      <span style={styles.icon}><i className={icon}></i></span>
+      <input
+        type={type}
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder={`Nhập ${label.toLowerCase()}`}
+        required
+        style={styles.input}
+      />
+      {toggleVisibility && (
+        <span onClick={toggleVisibility} style={styles.eyeIcon}>
+          {showPassword ? <FaEyeSlash /> : <FaEye />}
+        </span>
+      )}
+    </div>
+  </div>
+);
+
 const styles = {
   body: {
-    fontFamily: 'Arial, sans-serif',
-    backgroundColor: '#ff52c0',
+    backgroundColor: '#ff66b2',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     height: '100vh',
+    fontFamily: 'Arial, sans-serif',
     margin: 0,
   },
   container: {
-    background: 'white',
+    backgroundColor: 'white',
     padding: '30px',
     borderRadius: '20px',
-    width: '350px',
+    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
+    width: '420px',
     textAlign: 'center',
-    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+    border: '6px solid #ff66b2',
   },
   title: {
-    fontSize: '24px',
     fontWeight: 'bold',
     color: 'black',
+    fontSize: '26px',
     marginBottom: '20px',
   },
-  inputGroup: {
-    margin: '15px 0',
+  formGroup: {
+    marginBottom: '15px',
     textAlign: 'left',
+    fontSize: '16px',
+    fontWeight: 'bold',
+  },
+  inputGroup: {
+    display: 'flex',
+    alignItems: 'center',
+    background: '#f8e6eb',
+    borderRadius: '30px',
+    padding: '10px 15px',
+    border: '2px solid #ddd',
+  },
+  icon: {
+    color: '#d63384',
+    fontSize: '18px',
+    paddingRight: '10px',
   },
   input: {
-    width: 'calc(100% - 20px)',
-    padding: '10px',
-    borderRadius: '10px',
-    border: '1px solid #ccc',
-    backgroundColor: '#f8f8f8',
+    border: 'none',
+    outline: 'none',
+    background: 'transparent',
+    width: '100%',
     fontSize: '16px',
-    display: 'block',
-    margin: 'auto',
+    padding: '5px',
   },
   button: {
-    width: '100%',
-    backgroundColor: '#ff52c0',
+    backgroundColor: '#ff66b2',
     color: 'white',
-    padding: '12px',
+    fontSize: '18px',
     border: 'none',
-    borderRadius: '20px',
-    fontSize: '16px',
+    padding: '12px',
+    width: '100%',
+    borderRadius: '30px',
     cursor: 'pointer',
     fontWeight: 'bold',
+    textTransform: 'uppercase',
     marginTop: '10px',
   },
-  registerLink: {
-    marginTop: '10px',
+  text: {
+    marginTop: '15px',
     fontSize: '14px',
   },
   link: {
@@ -150,19 +170,25 @@ const styles = {
     color: 'black',
     textDecoration: 'none',
   },
-  forgotPassword: {
-    color: 'red',
-    fontSize: '14px',
-    marginTop: '10px',
-    display: 'block',
-    textDecoration: 'none',
-  },
   backButton: {
+    display: 'block',
+    marginTop: '10px',
+    color: 'black',
+    fontWeight: 'bold',
+    textDecoration: 'none',
+    fontSize: '14px',
+  },
+  errorText: {
     color: 'red',
     fontSize: '14px',
-    marginTop: '10px',
-    display: 'block',
-    textDecoration: 'none',
+    marginTop: '5px',
+    textAlign: 'left',
+    marginBottom: '10px',
+  },
+  eyeIcon: {
+    cursor: 'pointer',
+    fontSize: '20px',
+    color: '#d63384',
   },
 };
 

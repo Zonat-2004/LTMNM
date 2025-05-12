@@ -11,13 +11,15 @@ const Register = () => {
     confirmPassword: '',
   });
   const [error, setError] = useState('');
-  const [showPassword, setShowPassword] = useState(false); // State để hiển thị mật khẩu
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // State cho xác nhận mật khẩu
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError(''); // Xoá lỗi khi người dùng chỉnh sửa
+    setError('');
   };
 
   const handleSubmit = async (e) => {
@@ -30,26 +32,25 @@ const Register = () => {
     }
 
     try {
-      await axios.post('http://localhost:8000/api/registers/', {
-        name,
-        phone,
-        email,
-        password,
-      });
-      alert('Đăng ký thành công!');
-      navigate('/login');
-    } catch (error) {
-      const errorMsg = error.response?.data?.error || error.response?.data?.message || 'Lỗi đăng ký. Vui lòng thử lại.';
+      if (!otpSent) {
+        await axios.post('http://localhost:8000/api/send-otp-register/', { email });
+        setOtpSent(true);
+        alert('Mã OTP đã được gửi đến email của bạn!');
+      } else {
+        await axios.post('http://localhost:8000/api/registers/', {
+          name,
+          phone,
+          email,
+          password,
+          otp,
+        });
+        alert('Đăng ký thành công!');
+        navigate('/login');
+      }
+    } catch (err) {
+      const errorMsg = err.response?.data?.error || 'Đã xảy ra lỗi. Vui lòng thử lại!';
       setError(errorMsg);
     }
-  };
-
-  const togglePassword = () => {
-    setShowPassword(!showPassword); // Chuyển trạng thái hiển thị mật khẩu
-  };
-
-  const toggleConfirmPassword = () => {
-    setShowConfirmPassword(!showConfirmPassword); // Chuyển trạng thái hiển thị xác nhận mật khẩu
   };
 
   return (
@@ -59,57 +60,46 @@ const Register = () => {
         <form onSubmit={handleSubmit}>
           <InputField label="Họ và Tên" name="name" value={formData.name} onChange={handleChange} icon="fas fa-user" />
           <InputField label="Số điện thoại" name="phone" value={formData.phone} onChange={handleChange} icon="fas fa-phone" />
-          {error.toLowerCase().includes('số điện thoại') && (
-            <div style={styles.errorText}>{error}</div>
-          )}
           <InputField label="Email" name="email" type="email" value={formData.email} onChange={handleChange} icon="fas fa-envelope" />
-          {error.toLowerCase().includes('email') && (
-            <div style={styles.errorText}>{error}</div>
-          )}
-          <div style={styles.formGroup}>
-            <label>Mật khẩu</label>
-            <div style={styles.inputGroup}>
-              <span style={styles.icon}><i className="fas fa-lock"></i></span>
+
+          <PasswordField
+            label="Mật khẩu"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            show={showPassword}
+            toggle={() => setShowPassword(!showPassword)}
+          />
+
+          <PasswordField
+            label="Xác nhận mật khẩu"
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            show={showConfirmPassword}
+            toggle={() => setShowConfirmPassword(!showConfirmPassword)}
+          />
+
+          {otpSent && (
+            <div style={styles.formGroup}>
+              <label>Nhập mã OTP</label>
               <input
-                type={showPassword ? "text" : "password"} // Thay đổi type dựa trên trạng thái showPassword
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Nhập mật khẩu"
+                type="text"
+                name="otp"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                placeholder="Nhập mã OTP"
                 required
                 style={styles.input}
               />
-              <span 
-                onClick={togglePassword} 
-                style={styles.eyeIcon}>
-                <i className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"}`}></i>
-              </span>
             </div>
-          </div>
-          <div style={styles.formGroup}>
-            <label>Xác nhận mật khẩu</label>
-            <div style={styles.inputGroup}>
-              <span style={styles.icon}><i className="fas fa-key"></i></span>
-              <input
-                type={showConfirmPassword ? "text" : "password"} // Thay đổi type dựa trên trạng thái showConfirmPassword
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                placeholder="Xác nhận mật khẩu"
-                required
-                style={styles.input}
-              />
-              <span 
-                onClick={toggleConfirmPassword} 
-                style={styles.eyeIcon}>
-                <i className={`fas ${showConfirmPassword ? "fa-eye-slash" : "fa-eye"}`}></i>
-              </span>
-            </div>
-          </div>
-          {error && !error.toLowerCase().includes('số điện thoại') && !error.toLowerCase().includes('email') && (
-            <div style={styles.errorText}>{error}</div>
           )}
-          <button type="submit" style={styles.button}>ĐĂNG KÝ</button>
+
+          {error && <div style={styles.errorText}>{error}</div>}
+
+          <button type="submit" style={styles.button}>
+            {otpSent ? 'Xác nhận OTP và Đăng ký' : 'Gửi OTP'}
+          </button>
         </form>
         <p style={styles.text}>
           Bạn đã có tài khoản? <Link to="/login" style={styles.link}>Đăng nhập</Link>
@@ -120,7 +110,7 @@ const Register = () => {
   );
 };
 
-const InputField = ({ label, name, type = "text", value, onChange, icon }) => (
+const InputField = ({ label, name, type = 'text', value, onChange, icon }) => (
   <div style={styles.formGroup}>
     <label>{label}</label>
     <div style={styles.inputGroup}>
@@ -134,6 +124,27 @@ const InputField = ({ label, name, type = "text", value, onChange, icon }) => (
         required
         style={styles.input}
       />
+    </div>
+  </div>
+);
+
+const PasswordField = ({ label, name, value, onChange, show, toggle }) => (
+  <div style={styles.formGroup}>
+    <label>{label}</label>
+    <div style={styles.inputGroup}>
+      <span style={styles.icon}><i className="fas fa-lock"></i></span>
+      <input
+        type={show ? "text" : "password"}
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder={`Nhập ${label.toLowerCase()}`}
+        required
+        style={styles.input}
+      />
+      <span onClick={toggle} style={styles.eyeIcon}>
+        <i className={`fas ${show ? "fa-eye-slash" : "fa-eye"}`}></i>
+      </span>
     </div>
   </div>
 );
@@ -224,7 +235,6 @@ const styles = {
     color: 'red',
     fontSize: '14px',
     marginTop: '5px',
-    textAlign: 'left',
     marginBottom: '10px',
   },
   eyeIcon: {

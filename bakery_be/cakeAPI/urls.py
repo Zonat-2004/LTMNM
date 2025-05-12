@@ -16,7 +16,9 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 from .views.Forget_Resert_views import ForgotPasswordView, ResetPasswordView, VerifyOTPView  # đã import sẵn trong __init__.py
+from .views.SendOTPForRegisterView import VerifyOTPview
 from .views.views_register import RegisterAPIView  # đã import sẵn trong __init__.py
+from .views.SendOTPForRegisterView import SendOTPForRegisterView  # đã import sẵn trong __init__.py
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -44,6 +46,8 @@ urlpatterns = [
     path('api/forgot-password/', ForgotPasswordView.as_view(), name='forgot-password'),
     path('api/reset-password/', ResetPasswordView.as_view(), name='reset-password'),
     path('api/reset-password/verify/', VerifyOTPView.as_view()),
+    path('api/send-otp-register/', SendOTPForRegisterView.as_view()),
+    path('api/verify-otp/', VerifyOTPview.as_view(), name='verify-otp'),
     # Home path
     path('', home, name='home'),
 ]

@@ -36,21 +36,25 @@ const OrderDetail = () => {
     switch (status) {
       case 'pending':
         return 'Đang xử lý';
+      case 'confirmed':
+        return 'Đã xác nhận';
+      case 'shipping':
+        return 'Đang giao hàng';
       case 'shipped':
         return 'Đã giao hàng';
       case 'delivered':
         return 'Đã nhận hàng';
       case 'cancelled':
-        return 'Đã hủy';
+        return 'Đã huỷ';
       default:
-        return status;
+        return 'Trạng thái không xác định';
     }
   };
 
   const handleCancelOrder = async () => {
     if (window.confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?')) {
       try {
-        await axios.patch(`http://localhost:8000/api/order/${order._id}/`, {
+        await axios.patch(`http://localhost:8000/api/orders/${order._id}/update-status/`, {
           order_status: 'cancelled',
         });
         alert('Đơn hàng đã được hủy');
@@ -75,10 +79,6 @@ const OrderDetail = () => {
 
   return (
     <div className="container py-5">
-      <button className="btn btn-outline-primary mb-3" onClick={() => navigate('/orders')}>
-        ⬅️ Quay lại danh sách đơn hàng
-      </button>
-
       <h2 className="text-center text-primary mb-4">📦 Chi tiết đơn hàng</h2>
 
       <div className="card shadow p-4">
@@ -129,17 +129,25 @@ const OrderDetail = () => {
         </h4>
       </div>
 
-      {/* Thêm nút hủy đơn ở dưới */}
+      {/* Chỉ hiển thị nút Hủy đơn nếu trạng thái là 'pending' */}
       {order.order_status === 'pending' && (
         <div className="text-center mt-4">
-          <button className="btn btn-danger" onClick={handleCancelOrder}>
-            Hủy đơn
+          <button
+            className="btn btn-danger btn-lg px-4 py-2"
+            style={{ fontWeight: 'bold', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)' }}
+            onClick={handleCancelOrder}
+          >
+            Hủy đơn hàng
           </button>
         </div>
       )}
 
       <div className="text-center mt-4">
-        <button className="btn btn-outline-primary" onClick={() => navigate('/orders')}>
+        <button
+          className="btn btn-outline-primary btn-lg px-4 py-2"
+          style={{ fontWeight: 'bold', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)' }}
+          onClick={() => navigate('/orders')}
+        >
           ⬅️ Quay lại danh sách đơn hàng
         </button>
       </div>

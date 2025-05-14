@@ -29,14 +29,18 @@ const OrderList = () => {
     switch (status) {
       case 'pending':
         return 'Đang xử lý';
+      case 'confirmed':
+        return 'Đã xác nhận';
+      case 'shipping':
+        return 'Đang giao hàng';
       case 'shipped':
         return 'Đã giao hàng';
       case 'delivered':
         return 'Đã nhận hàng';
       case 'cancelled':
-        return 'Đã hủy';
+        return 'Đã huỷ';
       default:
-        return status;
+        return 'Không xác định';
     }
   };
 
@@ -62,9 +66,9 @@ const OrderList = () => {
                 <p className="card-text">
                   Trạng thái: <strong>{getOrderStatusText(order.order_status)}</strong>
                 </p>
-<Link to={`/orders/${order._id}`} className="btn btn-info btn-block">
-  Xem chi tiết
-</Link>
+                <Link to={`/orders/${order._id}`} className="btn btn-info btn-block">
+                  Xem chi tiết
+                </Link>
               </div>
             </div>
           </div>
